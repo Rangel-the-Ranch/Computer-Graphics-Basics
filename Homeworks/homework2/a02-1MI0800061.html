@@ -1,0 +1,134 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script>
+			
+
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+
+			document.body.appendChild( renderer.domElement );
+
+			var scene = new THREE.Scene();
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 5, 5, 8 );
+			camera.lookAt( new THREE.Vector3() );
+			scene.background = new THREE.Color( 'gray' );
+
+			var steve = new THREE.Group();
+
+			var head = new THREE.Mesh( 	new THREE.BoxGeometry( 0.8,0.8,0.8 ), 
+										new THREE.MeshPhongMaterial( {color: '#D27829'} ) );
+			head.position.set(0,1.9,0.05);
+			steve.add( head );
+
+			var leye = new THREE.Mesh( 	new THREE.BoxGeometry( 0.1,0.1,0.1 ), 
+										new THREE.MeshPhongMaterial( {color: 'black'} ) );
+			leye.position.set(0.2,2,0.45);
+			steve.add( leye );
+
+			var reye = new THREE.Mesh( 	new THREE.BoxGeometry( 0.1,0.1,0.1 ), 
+										new THREE.MeshPhongMaterial( {color: 'black'} ) );
+			reye.position.set(-0.2,2,0.45);
+			steve.add( reye );
+
+			var lear = new THREE.Mesh( 	new THREE.BoxGeometry( 0.1,0.3,0.1 ), 
+										new THREE.MeshPhongMaterial( {color: '#D26829'} ) );
+			lear.position.set(0.4,2,0.1);
+			steve.add( lear );
+			var rear = new THREE.Mesh( 	new THREE.BoxGeometry( 0.1,0.3,0.1 ), 
+										new THREE.MeshPhongMaterial( {color: '#D26829'} ) );
+			rear.position.set(-0.4,2,0.1);
+			steve.add( rear );
+
+			var nose = new THREE.Mesh( 	new THREE.BoxGeometry( 0.1,0.1,0.1 ), 
+										new THREE.MeshPhongMaterial( {color: '#D26829'} ) );
+			nose.position.set(0, 1.9 ,0.45);
+			steve.add( nose );
+
+			var mouth = new THREE.Mesh( new THREE.BoxGeometry( 0.4,0.15,0.1 ), 
+										new THREE.MeshPhongMaterial( {color: 'red'} ) );
+			mouth.position.set(0, 1.7 ,0.45);
+			steve.add( mouth );
+
+			var body = new THREE.Mesh( 	new THREE.BoxGeometry( 1.2 , 2 , 0.6 ),
+										new THREE.MeshPhongMaterial( {color: '#0D6B16'} ) );
+			body.position.set(0,0.5,0);
+			steve.add( body );
+
+			var sleeves = new THREE.Mesh( 	new THREE.BoxGeometry( 2.2 , 0.5 , 0.6 ),
+										new THREE.MeshPhongMaterial( {color: '#0D6B16'} ) );
+			sleeves.position.set(0,1.25,0);
+			steve.add( sleeves );
+
+			var lhand = lhand = new THREE.Mesh( new THREE.BoxGeometry( 0.5 , 1.9 , 0.5 ),
+												new THREE.MeshPhongMaterial( {color: '#D27829'} ) );
+			lhand.position.set(-0.8,0.5,0);
+			steve.add( lhand );
+
+			var rhand = new THREE.Mesh( new THREE.BoxGeometry( 0.5 , 1.9 , 0.5 ),
+										new THREE.MeshPhongMaterial( {color: '#D27829'} ) );
+			rhand.position.set(0.8,0.5,0);
+			steve.add( rhand );
+
+			var lleg = new THREE.Mesh( new THREE.BoxGeometry( 0.5 , 1.9 , 0.5 ),
+										new THREE.MeshPhongMaterial( {color: '#4B29D2'} ) );
+			lleg.position.set(-0.3,-1.4,0);
+			steve.add( lleg );
+
+			var rleg = new THREE.Mesh( new THREE.BoxGeometry( 0.5 , 1.9 , 0.5 ),
+										new THREE.MeshPhongMaterial( {color: '#4B29D2'} ) );
+			rleg.position.set(0.3,-1.4,0);
+			steve.add( rleg );
+
+			var pants = new THREE.Mesh( new THREE.BoxGeometry( 0.5 , 0.5 , 0.5 ),
+										new THREE.MeshPhongMaterial( {color: '#4B29D2'} ) );
+			pants.position.set(0,-0.6,0);
+			steve.add( pants );
+
+			var lshoe = new THREE.Mesh( new THREE.BoxGeometry( 0.53 , 0.3 , 0.92 ),
+										new THREE.MeshPhongMaterial( {color: '#331900'} ) );
+			lshoe.position.set(0.3,-2.2,0.2);
+			steve.add( lshoe );
+
+			var rshoe = new THREE.Mesh( new THREE.BoxGeometry( 0.53 , 0.3 , 0.92 ),
+										new THREE.MeshPhongMaterial( {color: '#331900'} ) );
+			rshoe.position.set(-0.3,-2.2,0.2);
+			steve.add( rshoe );
+
+			const hairCount = 100;
+			for(var x = 0; x<hairCount; x++){
+				var hair = new THREE.Mesh( new THREE.BoxGeometry( 0.1 , Math.random()/3 , 0.1 ),
+										new THREE.MeshPhongMaterial({color: 'black'} ) );
+				hair.position.set( Math.random()-0.5 , 2.3 , Math.random()-0.45 );
+				steve.add( hair );
+			}
+
+			var light = new THREE.PointLight();
+			light.position.set( 0, 0, 200 );
+			scene.add(light);
+			var light = new THREE.PointLight();
+			light.position.set( 200, 0, 20 );
+			scene.add(light);
+			var light = new THREE.PointLight();
+			light.position.set( 0,200, 0 );
+			scene.add(light);
+			scene.add( steve );
+
+			function drawFrame(){ 
+				steve.rotation.y += 0.005;
+				renderer.render( scene, camera ); 
+			
+			}
+
+		</script>
+	</body>
+</html>
