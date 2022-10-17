@@ -22,7 +22,7 @@
 			camera.position.set( 3, 3, 8 );
 			camera.lookAt( new THREE.Vector3() );
 
-			var geometry = new THREE.BoxGeometry( 2, 2, 2 );
+			var geometry = new THREE.SphereGeometry(2,50,50);
 			var material = new THREE.MeshPhongMaterial();
 			var cube = new THREE.Mesh( geometry, material );
 			scene.add( cube );

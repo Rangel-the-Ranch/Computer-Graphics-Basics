@@ -19,16 +19,6 @@
 			renderer.setAnimationLoop( drawFrame );
 			document.body.appendChild( renderer.domElement );
 
-			// като начало фонът е светлосив, само за да видите
-			// как като се върти сцената заедно със светлината има
-			// момент, в който светлината е от другата страна,
-			// и тогава виждаме обекта черен -- ако и фонът
-			// беше черен, няма да видим нищо, докато сцената
-			// не обърне някоя осветена част към нас. В решението
-			// си махнете този сив фон, да си стои черния.
-			// Тогава въртете само обекта, а не цялата сцена,
-			// така светлината ще тръгва от едно и също място
-			// и сцената винаги ще е осветена "от към нас".
 			var scene = new THREE.Scene();
 			scene.background = new THREE.Color( 'gray' );
 			
@@ -46,23 +36,44 @@
 			// Цилиндър - вероятно ще го ползвате за хапчето
 			// тук е сложен само за да демонстрира онзи дълъг
 			// коментар 20 реда по-нагоре
-			var geometry = new THREE.CylinderGeometry( 1, 1, 5, 16 );
+			var geometry = new THREE.CylinderGeometry( 1, 1, 2.5, 16 );
 			var material = new THREE.MeshPhongMaterial( {color:'red'} );
 			var cylinder = new THREE.Mesh( geometry, material );
-			scene.add( cylinder ); // добавяме към хапчето, а не към сцената
+			cylinder.position.set(0,1.25,0);
+			
+			pill.add( cylinder ); 
+
+			var geometry = new THREE.CylinderGeometry( 1, 1, 2.5, 16 );
+			var material = new THREE.MeshPhongMaterial( {color:'yellow'} );
+			var cylinder = new THREE.Mesh( geometry, material );
+			cylinder.position.set(0,-1.25,0);
+			pill.add( cylinder ); 
+
+			
+			var geometry = new THREE.SphereGeometry( 1, 16, 16 , 0 , Math.PI*2, 0 , Math.PI/2 );
+			var material = new THREE.MeshPhongMaterial( {color:'red'} );
+			var sphere = new THREE.Mesh( geometry, material );
+			sphere.position.set(0,2.5,0);
+			pill.add( sphere ); 
+
+			var geometry = new THREE.SphereGeometry( 1, 16, 16 ,  0 , Math.PI*2, Math.PI/2 , Math.PI/2);
+			var material = new THREE.MeshPhongMaterial( {color:'yellow'} );
+			var sphere = new THREE.Mesh( geometry, material );
+			sphere.position.set(0,-2.5,0);
+			pill.add( sphere ); 
+			
 
 			// Светлина
 			var light = new THREE.PointLight();
 			light.position.set( 0, 0, 20 );
 			scene.add(light);
+			scene.add(pill);
 			
-			// Въртене на сцената - в решението трябва да се
-			// върти хапчето, а не сцената
 			function drawFrame()
 			{
-				scene.rotation.x += 0.005;
-				scene.rotation.z += 0.005;
-				renderer.render( scene, camera );
+				pill.rotation.x += 0.005;
+				pill.rotation.z += 0.005;
+				renderer.render( scene, camera);
 			}
 		</script>
 	</body>

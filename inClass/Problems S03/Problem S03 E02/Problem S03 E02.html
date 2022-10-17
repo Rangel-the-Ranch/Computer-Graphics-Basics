@@ -28,10 +28,48 @@
 			
 			// Бяла сфера без осветяване - цветовете са еднако ярки
 			// Тази сфера трябва да се разцепи на 8 цветни парчета
-			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 );
-			var material = new THREE.MeshBasicMaterial();
+			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 , 0 , pi2, 0 , pi2 );
+			var material = new THREE.MeshBasicMaterial( {color: "red"} );
 			scene.add( new THREE.Mesh( geometry, material ) );
 			
+			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 , pi2 , pi2, 0, pi2 );
+			var material = new THREE.MeshBasicMaterial( {color: "yellow"} );
+			scene.add( new THREE.Mesh( geometry, material ) );
+
+			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 , pi2*-2 , pi2, 0, pi2 );
+			var material = new THREE.MeshBasicMaterial( {color: "green"} );
+			scene.add( new THREE.Mesh( geometry, material ) );
+
+			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 , pi2*-1 , pi2, 0, pi2 );
+			var material = new THREE.MeshBasicMaterial( {color: "blue"} );
+			scene.add( new THREE.Mesh( geometry, material ) );
+
+			///////////////////////////////////////////////////////////
+			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 , 0 , pi2, pi2 , pi2 );
+			var material = new THREE.MeshBasicMaterial( {color: "green"} );
+			scene.add( new THREE.Mesh( geometry, material ) );
+			
+			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 , pi2 , pi2, pi2, pi2 );
+			var material = new THREE.MeshBasicMaterial( {color: "blue"} );
+			scene.add( new THREE.Mesh( geometry, material ) );
+
+			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 , pi2*-2 , pi2, pi2, pi2 );
+			var material = new THREE.MeshBasicMaterial( {color: "red"} );
+			scene.add( new THREE.Mesh( geometry, material ) );
+
+			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 , pi2*-1 , pi2, pi2, pi2 );
+			var material = new THREE.MeshBasicMaterial( {color: "yellow"} );
+			scene.add( new THREE.Mesh( geometry, material ) );
+			//geometry.rotate.x=+Math.PI;
+			/*
+			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 , pi2 , Math.PI/2, 0 , pi2*-1 );
+			var material = new THREE.MeshBasicMaterial( {color: "green"} );
+			scene.add( new THREE.Mesh( geometry, material ) );
+
+			var geometry = new THREE.SphereGeometry( 1.5, 16, 16 , pi2 , Math.PI/2, 0 , pi2*-2 );
+			var material = new THREE.MeshBasicMaterial( {color: "blue"} );
+			scene.add( new THREE.Mesh( geometry, material ) );
+			*/
 			// въртене на сцената
 			function drawFrame()
 			{
