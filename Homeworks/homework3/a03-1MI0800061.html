@@ -1,0 +1,119 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script>
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+
+			var scene = new THREE.Scene();
+			
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 0, 0, 16 );
+			camera.lookAt( new THREE.Vector3() );
+
+			var Box = new THREE.Group();
+			var BoxMaterial = new THREE.MeshPhongMaterial( {color: new THREE.Color( "red" )} ) 
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry( 4, 0.2, 4 ),BoxMaterial );
+			cube.position.set( 0, -2.25, 0 );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry( 0.5, 1.5, 4 ),BoxMaterial);
+			cube.position.set( -2, -1.6, 0 );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry( 0.5, 1.5, 4 ),BoxMaterial );
+			cube.position.set( 2, -1.6, 0 );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry( 4.5, 1.5, 0.5 ),BoxMaterial);
+			cube.position.set( 0, -1.6, 2 );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry( 4.5, 1.5, 0.5 ),BoxMaterial );
+			cube.position.set( 0, -1.6, -2 );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry( 4.5, 0.5 , 1 ),BoxMaterial );
+			cube.position.set( 0, -0.6, -2.8 );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry( 0.5, 4 , 1 ),BoxMaterial );
+			cube.position.set( -2, 1.5, -2.8 );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry( 0.5, 4 , 1 ),BoxMaterial );
+			cube.position.set( 2, 1.5, -2.8 );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry( 4.5, 0.5 , 1 ),BoxMaterial );
+			cube.position.set( 0, 3.6, -2.8 );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry( 4, 4 , 0.2 ),BoxMaterial );
+			cube.position.set( 0, 1.5, -3.4 );
+			Box.add( cube );
+
+			BoxMaterial = new THREE.MeshPhongMaterial( {color: new THREE.Color( "blue" )} ) ;
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry(3, 1, 1.4 ),BoxMaterial );
+			cube.position.set( 0, -1.8, -1.1  );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry(1, 1, 4 ),BoxMaterial );
+			cube.position.set( -1.5, -1.8, 0  );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry(3.5, 1, 1.7 ),BoxMaterial );
+			cube.position.set( 0, -1.8, 1.15  );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry(1, 1, 4 ),BoxMaterial );
+			cube.position.set( 1.5, -1.8, 0  );
+			Box.add( cube );
+
+			var cube = new THREE.Mesh( 	new THREE.BoxGeometry(3.6, 0.2, 3.6 ),BoxMaterial );
+			cube.position.set( 0, -1.8, 0  );
+			Box.add( cube );
+
+			var cilinder = new THREE.Mesh( new THREE.CylinderGeometry( 0.1, 0.1, 3, 32 ) , new THREE.MeshPhongMaterial( {color: new THREE.Color( "gold" )} ) );
+			cilinder.rotateZ(Math.PI/2);
+			cilinder.position.set( 0, -0.85, -2.3  );
+			Box.add (cilinder);
+
+			scene.add( Box );
+			
+			var Ring = new THREE.Group();
+
+			var ring = new THREE.Mesh( 	new THREE.TorusGeometry(1.2, 0.25, 300, 100),
+										new THREE.MeshPhongMaterial( {color: new THREE.Color( "gold" )} ) );
+			ring.position.set( 0, -0.2, 0  );
+			Ring.add( ring );
+		
+			scene.add(Ring);
+
+			var light = new THREE.PointLight();
+			light.position.set( 0, 5, 10 );
+			scene.add( light );
+			
+			function drawFrame(){
+				Box.rotation.x += 0.005;
+				Box.rotation.y += 0.005;
+				Ring.rotation.y +=0.005;
+				Ring.rotation.x +=0.005;
+				Box.rotation.z += 0.005;
+				Ring.rotation.z +=0.005;
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>
