@@ -1,0 +1,74 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script>
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+
+			var scene = new THREE.Scene();
+			
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 0, 50, 50 );
+			camera.lookAt( 0,0,0 );
+
+
+			var Platform = new THREE.Group();
+			var geometry = new THREE.BoxGeometry( 50, 1, 50 );
+			var material = new THREE.MeshPhongMaterial();
+			Platform.add( new THREE.Mesh( geometry, material ) );
+
+			const numberOfStars = 10;
+			var Stars = [];
+
+			var balls=[];
+			var StarSize = [0.2, 0.2, 0.19, 0.15 , 0.25 , 0.1 , 0.13 , 0.11 , 0.16 , 0.13];
+			var StarX = [-10, -9, -2 ,-6.5 , 1 , -1 , -5 , -5.3 , 5, 6];
+			var StarY = 1.2;
+			var StarZ = [-8,  0, -3 , 7, 4 , 8, 8, 8.7 , 4, 3];
+			for (var i=0; i<numberOfStars; i++){
+				
+				Stars[i] = new THREE.Vector3 (StarX[i],  StarY, StarZ[i]);
+				balls[i] = new THREE.Mesh( new THREE.SphereGeometry( StarSize[i] ), new THREE.MeshBasicMaterial( {color: "#F87BF2"} ) );
+				balls[i].position.set( StarX[i], StarY, StarZ[i] );
+				Platform.add( balls[i] );
+				
+				var light = new THREE.PointLight( "purple" );
+				balls[i].add( light );	
+			}
+			function drawLineBetween (indexA, indexB){
+
+				Platform.add( 	new THREE.Line( new THREE.BufferGeometry().setFromPoints( [ Stars[indexA], Stars[indexB] ]  ),
+								new THREE.MeshBasicMaterial( { color: "#F886F3" } ) ));
+
+			}
+			
+			drawLineBetween(0,1);
+			drawLineBetween(0,2);
+			drawLineBetween(1,2);
+			drawLineBetween(1,3);
+			drawLineBetween(2,4);
+			drawLineBetween(4,5);
+			drawLineBetween(5,7);
+			drawLineBetween(7,6);
+			drawLineBetween(6,3);
+			drawLineBetween(4,8);
+			drawLineBetween(8,9);
+			
+			scene.add( Platform );
+
+			function drawFrame(){
+				Platform.rotation.y += 0.005;
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>
