@@ -1,0 +1,72 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script src="CSG.js"></script>
+		<script>
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+			
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 'grey' );
+			
+			camera = new THREE.PerspectiveCamera( 30, window.innerWidth/window.innerHeight );
+			camera.position.set( 0, 0, 10 );
+			camera.lookAt( new THREE.Vector3() );
+			
+
+			const body = new THREE.Group();
+
+			const hammockLenght = 2 ,hammockLenghtInner = 1.9, segments = 16;
+			const boxOne = new THREE.Mesh( new THREE.BoxGeometry( hammockLenght, hammockLenght/2, hammockLenght/2 ) );
+			boxOne.position.set(0,-hammockLenght/4,-hammockLenght/4);
+			const csg = new CSG();
+			csg.intersect( [new THREE.Mesh( new THREE.SphereGeometry( hammockLenght/2, segments, segments) ), boxOne] );
+			const csgTwo = new CSG();
+			csgTwo.subtract( [csg.toMesh(), new THREE.Mesh( new THREE.SphereGeometry( hammockLenghtInner/2, segments, segments) )] );
+			const hammock = csgTwo.toMesh();
+			hammock.material = new THREE.MeshPhongMaterial( { color: 'orange'});
+			hammock.rotation.x += -Math.PI/4;
+
+			const polesRadius = 0.1, polesHeight = 2, distanceFromHammock = 0.2, polesPushDown = 0.3;
+			const pole1 = new THREE.Mesh(new THREE.CylinderGeometry(polesRadius, polesRadius, polesHeight), new THREE.MeshPhongMaterial({color: 'brown'}));
+			pole1.position.set((-1)*(hammockLenght/2 + distanceFromHammock), -polesPushDown, 0);
+			const pole2 = new THREE.Mesh(new THREE.CylinderGeometry(polesRadius, polesRadius, polesHeight), new THREE.MeshPhongMaterial({color: 'brown'}));
+			pole2.position.set(hammockLenght/2 + distanceFromHammock, -polesPushDown, 0);
+
+			const ropeRadius = 0.02, ropeHeight = 0.3, ropeBuffer = 0.02;
+			const rope1 = new THREE.Mesh(new THREE.CylinderGeometry(ropeRadius, ropeRadius, ropeHeight), new THREE.MeshPhongMaterial({color: 'black'}));
+			rope1.rotation.z += Math.PI/4;
+			rope1.position.set( -hammockLenght/2-ropeBuffer,0,0);
+			const rope2 = new THREE.Mesh(new THREE.CylinderGeometry(ropeRadius, ropeRadius, ropeHeight), new THREE.MeshPhongMaterial({color: 'black'}));
+			rope2.rotation.z += -Math.PI/4;
+			rope2.position.set( hammockLenght/2+ropeBuffer,0,0);
+
+			const planeSize = 10;
+			const plane = new THREE.Mesh( new THREE.PlaneGeometry( planeSize, planeSize ), new THREE.MeshPhongMaterial( {color: "lightgreen", side: THREE.DoubleSide} ) );
+			plane.rotation.x += Math.PI/2;
+			plane.position.set(0,-polesPushDown-polesHeight/2,0);
+
+			body.add(hammock,pole1,pole2 , rope1 , rope2, plane);
+
+			
+			const light = new THREE.PointLight();
+			light.position.set( 0, 5, 10 );
+			scene.add( light );
+			
+			scene.add(body);
+			
+			function drawFrame(){
+				body.rotation.y += 0.005;
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>

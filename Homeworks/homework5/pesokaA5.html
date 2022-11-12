@@ -1,0 +1,94 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script src="CSG.js"></script>
+		<script>
+
+			
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+			
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 'green' );
+			
+			var aspect = window.innerWidth/window.innerHeight;
+			camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 30, -5, 0);
+			camera.lookAt( new THREE.Vector3() );
+
+			var shatra = new THREE.Group();
+			scene.add(shatra);
+	
+			var geometry = new THREE.CylinderGeometry(0.1, 0.1, 8, 64);
+			var material = new THREE.MeshLambertMaterial({color: 'silver'});
+			var pole1 = new THREE.Mesh(geometry, material);
+			pole1.position.set(4.125, -5, 4.125);
+			shatra.add(pole1);
+
+			var pole2 = new THREE.Mesh(geometry, material);
+			pole2.position.set(4.125, -5, -4.125);
+			shatra.add(pole2);
+
+			var pole3 = new THREE.Mesh(geometry, material);
+			pole3.position.set(-4.125, -5, 4.125);
+			shatra.add(pole3);
+
+			var pole4 = new THREE.Mesh(geometry, material);
+			pole4.position.set(-4.125, -5, -4.125);
+			shatra.add(pole4);
+
+			var outer = new THREE.Mesh( new THREE.ConeGeometry(6, 2, 4 ) );
+			var inner = new THREE.Mesh( new THREE.BoxGeometry( 8.375, 0.625, 8.375) );
+			outer.rotation.y = Math.PI/4;
+			inner.position.y = -1.3;
+
+			var down = new THREE.Mesh( new THREE.BoxGeometry( 8.485, 0.75, 8.485)/*, material*/);
+			down.position.y=-1.375;
+			var innerDown = new THREE.Mesh( new THREE.BoxGeometry( 8.375, 5, 8.375) );
+			outer.rotation.y = Math.PI/4;
+			inner.position.y = -1.375	;
+			
+
+			var csg = new CSG();
+			csg.subtract( [outer, inner] );
+			var obj = csg.toMesh();
+			obj.material = new THREE.MeshLambertMaterial( {
+				color: 'red',
+				specular: 'white' });
+			shatra.add(obj);
+
+			var csg2 = new CSG();
+			csg2.subtract( [down, innerDown] );
+			var obj2 = csg2.toMesh();
+			obj2.material = new THREE.MeshLambertMaterial( {
+				color: 'red',
+				specular: 'white' });
+			shatra.add(obj2);
+			
+			var light = new THREE.Group();
+			var light1 = new THREE.PointLight();
+			light1.position.set( 0, -5, 0 );
+			light.add(light1);
+
+			var light2 = new THREE.PointLight();
+			light2.position.set( 10, 20, 5);
+			light.add(light2);
+			scene.add( light );
+			// shatra.rotation.z = -Math.PI/8;
+			
+			function drawFrame()
+			{
+				shatra.rotation.z += -0.015;
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>

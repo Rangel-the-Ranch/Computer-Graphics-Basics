@@ -1,0 +1,191 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script src="CSG.js"></script> <!-- Включване на библиотека за CSG -->
+		<script>
+			
+			var renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 'lavenderblush' );
+			
+			var aspect = window.innerWidth/window.innerHeight;
+			camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 0, 0, 16 );
+			camera.lookAt( new THREE.Vector3() );
+
+			var swing = new THREE.Group();
+			scene.add( swing );
+
+			var geometry = new THREE.CylinderGeometry(0.06, 0.06, 4, 60);
+			var material = new THREE.MeshPhongMaterial( {color: 'brown'} );
+			var cyl1 = new THREE.Mesh(geometry, material);
+			cyl1.position.set(4, 0, 3);
+			cyl1.rotation.set(0.5, 0, 0);
+			//swing.add(cyl1);
+
+			var cyl2 = new THREE.Mesh(geometry, material);
+			cyl2.position.set(4, 0, 3);
+			cyl2.rotation.set(-0.5, 0, 0);
+			//swing.add(cyl2);
+			var csg1 = new CSG();
+			csg1.union([cyl1, cyl2]);
+			var kur = csg1.toMesh();
+			kur.rotation.set(0, 0, 0);
+			swing.add(kur);
+
+			var cyl3 = new THREE.Mesh(geometry, material);
+			cyl3.position.set(-4, 0, 3);
+			cyl3.rotation.set(0.5, 0, 0);
+			//swing.add(cyl3);
+
+			var cyl4 = new THREE.Mesh(geometry, material);
+			cyl4.position.set(-4, 0, 3);
+			cyl4.rotation.set(-0.5, 0, 0);
+			//swing.add(cyl4);
+			var csg2 = new CSG();
+			csg2.union([cyl3, cyl4]);
+			var kur2 = csg2.toMesh();
+			
+
+			var cyl5 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.85, 60), material);
+            cyl5.position.set(-4, 1.73, 3);
+			cyl5.rotation.set(1.58, 0, 0);
+			var csg3 = new CSG();
+			csg3.union([kur2, cyl5]);
+			var kur3 = csg3.toMesh();
+			kur3.rotation.set(0, 0, 0);
+			swing.add(kur3);
+
+			var cyl6 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.85, 60), material);
+            cyl6.position.set(4, 1.73, 3);
+			cyl6.rotation.set(1.58, 0, 0);
+			//swing.add(cyl6);
+			var csg4 = new CSG();
+			csg4.union([kur, cyl6]);
+			var kur4 = csg4.toMesh();
+			swing.add(kur4);
+
+			var cyl7 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 8, 60), material);
+            cyl7.position.set(0, 1.73, 3);
+			cyl7.rotation.set(1.58, 0, 1.57);
+			swing.add(cyl7);
+
+
+            var material1 = new THREE.MeshPhongMaterial( {color: 'green'} );
+			var box1 = new THREE.Mesh(new THREE.BoxGeometry(4, 1.2, 0.1), material1);
+			box1.position.set(0, 0.2, 2.2);
+			//swing.add(box1);
+			var boxk = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), material1);
+			boxk.position.set(0, 0.2, 2.2);
+			var boxk1 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), material1);
+			boxk1.position.set(0.4, 0.2, 2.2);
+			var boxk2 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), material1);
+			boxk2.position.set(0.8, 0.2, 2.2);
+			var boxk3 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), material1);
+			boxk3.position.set(1.2, 0.2, 2.2);
+			var boxk4 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), material1);
+			boxk4.position.set(1.6, 0.2, 2.2);
+			var boxk5 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), material1);
+			boxk5.position.set(-0.4, 0.2, 2.2);
+			var boxk6 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), material1);
+			boxk6.position.set(-0.8, 0.2, 2.2);
+			var boxk7 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), material1);
+			boxk7.position.set(-1.2, 0.2, 2.2);
+			var boxk8 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.9, 0.2), material1);
+			boxk8.position.set(-1.6, 0.2, 2.2);
+			//swing.add(boxk1);
+
+			
+			//swing.add(boxk);
+			var csg5 = new CSG();
+			csg5.subtract([box1, boxk, boxk1, boxk2, boxk3, boxk4, boxk5, boxk6, boxk7, boxk8]);
+			var kur5 = csg5.toMesh();
+			swing.add(kur5);
+
+			var box2 = new THREE.Mesh(new THREE.BoxGeometry(4, 0.1, 1.6), material1);
+			box2.position.set(0, -0.43, 2.95);
+			swing.add(box2);
+
+			/*var boxz = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), material1);
+			boxz.position.set(0, -0.43, 2.95);
+			
+			var boxk9 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), material1);
+			boxk9.position.set(0.4, -0.43, 2.95);
+			var boxk10 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), material1);
+			boxk10.position.set(0.8, -0.43, 2.95);
+			var boxk11 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), material1);
+			boxk11.position.set(1.2, -0.43, 2.95);
+			var boxk12 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), material1);
+			boxk12.position.set(1.6, -0.43, 2.95);
+			var boxk13 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), material1);
+			boxk13.position.set(-0.4, -0.43, 2.95);
+			var boxk14 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), material1);
+			boxk14.position.set(-0.8, -0.43, 2.95);
+			var boxk15 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), material1);
+			boxk15.position.set(-1.2, -0.43, 2.95);
+			var boxk16 = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.9), material1);
+			boxk16.position.set(-1.6, -0.43, 2.95);
+			//swing.add(boxk16);
+
+			var csg6 = new CSG();
+			csg6.subtract([box2, boxz, boxk9, boxk10, boxk11, boxk12, boxk13, boxk14, boxk15, boxk16]);
+			var kur6 = csg6.toMesh();
+			swing.add( kur6 );*/
+
+			var handle1 = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.1, 20, 80, 2.9), material1);
+			handle1.position.set(1.9, -0.5, 3);
+			handle1.rotation.set(0.1, 1.55, 0);
+			swing.add(handle1);
+
+			var handle2 = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.1, 20, 80, 2.9), material1);
+			handle2.position.set(-1.9, -0.5, 3);
+			handle2.rotation.set(0.1, 1.55, 0);
+			swing.add(handle2);
+
+			var cyl8 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.4, 60), material);
+            cyl8.position.set(1.9, 0.7, 3);
+			cyl8.rotation.set(0, 0, 0);
+			swing.add(cyl8);
+
+			var handle3 = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.06, 20, 80), material);
+			handle3.position.set(1.9, 1.6, 3);
+			handle3.rotation.set(0.1, 1.55, 0);
+			swing.add(handle3);
+
+			var cyl9 = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 1.4, 60), material);
+            cyl9.position.set(-1.9, 0.7, 3);
+			cyl9.rotation.set(0, 0, 0);
+			swing.add(cyl9);
+
+			var handle4 = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.06, 20, 80), material);
+			handle4.position.set(-1.9, 1.6, 3);
+			handle4.rotation.set(0.1, 1.55, 0);
+			swing.add(handle4);
+			
+
+			var light = new THREE.PointLight();
+			light.position.set( 0, 5, 10 );
+			scene.add( light );
+			
+			
+			function drawFrame()
+			{
+				swing.rotation.x += 0.005;
+				swing.rotation.y += 0.003;
+				swing.rotation.z += 0.010;
+				
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>
