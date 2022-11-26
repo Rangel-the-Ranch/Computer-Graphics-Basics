@@ -1,0 +1,120 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script src="CSG.js"></script>
+		<script>
+			const renderer = new THREE.WebGLRenderer();
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+			
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 'lightblue' );
+			
+			camera = new THREE.PerspectiveCamera( 30, window.innerWidth/window.innerHeight );
+			camera.position.set( 0, 0, 20 );
+			camera.lookAt( new THREE.Vector3() );
+			
+
+			const body = new THREE.Group();
+
+
+			var baseWight = 0.6;
+			var baseHeight = 0.5;
+
+
+			var base = new THREE.Mesh( new THREE.BoxGeometry( baseWight, baseHeight, baseWight ), new THREE.MeshPhongMaterial( {color: "grey", side: THREE.DoubleSide} ) );
+			base.position.set(0,-1.75,0);
+			body.add(base);
+
+			
+			var base = new THREE.Mesh( new THREE.BoxGeometry( 0.15, 2, 0.15 ), new THREE.MeshPhongMaterial( {color: "grey"} ) );
+			base.position.set(-0.1,-0.4,0.3);
+			base.rotation.z += 0.1;
+			body.add(base);
+			
+			var base = new THREE.Mesh( new THREE.BoxGeometry( 0.15, 2, 0.15 ), new THREE.MeshPhongMaterial( {color: "grey"} ) );
+			base.position.set(0.1,-0.4,0.3);
+			base.rotation.z -= 0.1;
+
+			body.add(base);
+
+			var geometry = new THREE.CylinderGeometry( 0.4, 0.3, 2, 32 );
+			var material = new THREE.MeshPhongMaterial( {color:"grey"} );
+			var cylinder = new THREE.Mesh( geometry, material );
+			cylinder.position.set(0,-0.4,0);
+			body.add( cylinder );
+			
+			
+			var geometry = new THREE.CylinderGeometry( 0.2, 0.3,1.7, 32 );
+			var material = new THREE.MeshPhongMaterial( {color: "grey"} );
+			var cylinder = new THREE.Mesh( geometry, material );
+			cylinder.position.set(-0.4,0.6,0);
+			cylinder.rotation.z += Math.PI/8;
+			body.add( cylinder );
+
+			var geometry = new THREE.CylinderGeometry( 0.07, 0.07 ,0.5, 32 );
+			var material = new THREE.MeshPhongMaterial( {color: "black"} );
+			var cylinder = new THREE.Mesh( geometry, material );
+			cylinder.rotation.z += Math.PI/9;
+			cylinder.position.set(-0.7,1.5,0);
+
+			body.add( cylinder );
+			var geometry = new THREE.CylinderGeometry( 0.07, 0.07 ,0.5, 32 );
+			var material = new THREE.MeshPhongMaterial( {color: "black"} );
+			var cylinder = new THREE.Mesh( geometry, material );
+			cylinder.rotation.z -= Math.PI/9;
+			cylinder.position.set(0.7,1.5,0);
+
+			body.add( cylinder );
+
+			var geometry = new THREE.CylinderGeometry( 0.25, 0.25 ,0.2, 32 );
+			var material = new THREE.MeshPhongMaterial( {color: "black"} );
+			var cylinder = new THREE.Mesh( geometry, material );
+			cylinder.position.set(0,-1.5,0);
+
+			body.add( cylinder );
+
+			body.add( cylinder );
+			var geometry = new THREE.CylinderGeometry( 0.15, 0.15 ,0.5, 32 );
+			var material = new THREE.MeshPhongMaterial( {color: "black"} );
+			var cylinder = new THREE.Mesh( geometry, material );
+			cylinder.rotation.x += 0.2;
+			cylinder.position.set(0,0.8,0.1);
+
+			body.add( cylinder );
+
+			var geometry = new THREE.CylinderGeometry( 0.2, 0.3,1.7, 32 );
+			var material = new THREE.MeshPhongMaterial( {color: "grey"} );
+			var cylinder = new THREE.Mesh( geometry, material );
+			cylinder.position.set(0.4,0.6,0);
+			cylinder.rotation.z -= Math.PI/8;
+			body.add( cylinder );
+
+			const planeSize = 10;
+			const plane = new THREE.Mesh( new THREE.PlaneGeometry( planeSize, planeSize ), new THREE.MeshPhongMaterial( {color: "lightgreen", side: THREE.DoubleSide} ) );
+			plane.rotation.x += Math.PI/2;
+			plane.position.set(0,-2,0);
+
+			body.add(plane);
+
+			
+			const light = new THREE.PointLight();
+			light.position.set( 0, 5, 10 );
+			scene.add( light );
+			
+			scene.add(body);
+			
+			function drawFrame(){
+				body.rotation.y += 0.005;
+				renderer.render( scene, camera );
+			}
+		</script>
+	</body>
+</html>
