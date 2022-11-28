@@ -11,22 +11,100 @@
 	
 	<body>
 		<script>
-			const FN = '1MI0800061'; // факултетен номер 
+			const FN = '1MI0800061';
 		</script>
 		
 		<script src="init.js"></script>
 			
 		<script>
-		
-			// 3. едва тогава почвайте да строите стените
-			//    и да добавяте исканите обекти по стаите
+
+			class Wall{
+				static defaultColor = "yellow";
+				static defaultShininess = 10;
+				static wallWight = 0.2;
+				static wallHeight = 4;
+				static wallPosY = Wall.wallHeight/2 - 0.01;
+				static wallCount = 0;
+				static wallsArr = [];
+				
+				constructor(lenght, isXwall, posX, posZ){
+					this.color = Wall.defaultColor;
+					this.posX = posX;
+					this.posY = Wall.wallPosY;
+					this.posZ = posZ;
+					this.lenghtY = Wall.wallHeight;
+					
+					if(isXwall){
+						this.lenghtX =  lenght;
+						this.lenghtZ = Wall.wallWight;
+						
+					}else{
+						this.lenghtX = Wall.wallWight;
+						this.lenghtZ = lenght;
+					}
+
+
+				}
+				generateWall(){
+					const wallGeometry = new THREE.BoxGeometry( this.lenghtX, this.lenghtY, this.lenghtZ );
+					const wallMaterial = new THREE.MeshPhongMaterial( {color: this.color, shininess: Wall.defaultShininess} );
+					const wall = new THREE.Mesh( wallGeometry, wallMaterial );
+					wall.position.set( this.posX, this.posY, this.posZ );
+					//wall.receiveShadow = true;
+					//wall.castShadow = true;
+					scene.add(wall);
+				}
+				paint(color){
+					this.color = color; 
+				}
+				static newXWall(lenght,posX, posY){
+					Wall.wallsArr[Wall.wallCount] = new Wall (lenght, 1, posX, posY);
+					Wall.wallCount++;
+				}
+				static newZWall(lenght, posX, posY){
+					Wall.wallsArr[Wall.wallCount] = new Wall (lenght, 0, posX, posY);
+					Wall.wallCount++;
+				}
+				
+				static generateAllWalls(){
+					for(let i=0; i<Wall.wallCount; i++){
+						Wall.wallsArr[i].generateWall();
+					}
+				}
+
+
+			}
+			Wall.defaultColor = "yellow";
+			Wall.newZWall(6, 6.90 , 1);
+			Wall.newXWall(2.2, 5.9 ,3.9);
+			Wall.newZWall(4, 4.90 , 6);
+			Wall.newXWall(8, 1 ,7.9);
+			Wall.newZWall(4, -2.9 ,5.8);
+			Wall.newXWall(4, -5 ,3.9);
+			Wall.newZWall(6, -6.9 ,1);
+			Wall.newXWall(4, -5 ,-1.9);	
+			Wall.newZWall(4.2, -2.9 ,-3.9);
+			Wall.newXWall(8, 1 ,-5.9);	
+			Wall.newZWall(4, 4.90 , -4);
+			Wall.newXWall(2.2, 5.9 ,-1.9);
+
+
+			Wall.generateAllWalls();
+
+			//Wall.color = "red";
+			//Wall.newZWall(6, 5.90 , 1);
 
 			
-			var geometry = new THREE.BoxGeometry( 2, 2, 2 ),
+			
+
+
+
+
+			var geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 ),
 				material = new THREE.MeshPhongMaterial( {color:'crimson', shininess: 100} );
 				
 			var cube = new THREE.Mesh( geometry, material );
-				cube.position.set( 0, 1, 0 );
+				cube.position.set( 0.5, 0.1, 0.51 );
 				cube.receiveShadow = true;
 				cube.castShadow = true;
 			
