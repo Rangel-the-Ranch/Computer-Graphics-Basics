@@ -189,8 +189,35 @@
 						Wall.wallsArr[i].generateWall();
 					}
 				}
+			}
+			class Carpet{
+				static defaultXsize = 1;
+				static defaultZsize = 1;
+				static carpetArr = [];
+				static carperCount = 0;
 
-
+				constructor(posX,posZ,lenX,lenZ,color){
+					this.lenghtX = lenX;
+					this.lenghtZ = lenZ;
+					this.posX = posX;
+					this.posZ = posZ;
+					this.color = color;
+					this.generate();
+				}
+				generate(){
+					const geometry = new THREE.PlaneGeometry( this.lenghtX, this.lenghtZ);
+					const material = new THREE.MeshPhongMaterial( {color: this.color, shininess: 0} );
+					const render = new THREE.Mesh(geometry,material);
+					render.position.set(this.posX,0,this.posZ);
+					render.rotation.x -= Math.PI/2;
+					render.receiveShadow = true;
+					render.castShadow = true;
+					house.add(render);
+				}
+				static newCarper(posX, posZ,lenX,lenZ,color){
+					Carpet.carpetArr[Carpet.carperCount] = new Carpet (posX, posZ,lenX,lenZ,color);
+					Carpet.carpetCount++;
+				}
 			}
 			
 			Wall.defaultColor = "yellow";
@@ -230,6 +257,8 @@
 
 			Wall.generateAllWalls();
 			Wall.generateWindows();
+
+			Carpet.newCarper(-2.5,1,9,6,"brown");
 
 			scene.add(house);
 
