@@ -25,14 +25,25 @@
 				static wallWight = 0.2;
 				static wallHeight = 3;
 				static wallPosY = Wall.wallHeight/2 - 0.01;
-				static wallCount = 0;
-				static wallsArr = [];
+				
 
 				static defaultColor = "yellow";
 				static defaultShininess = 10;
-				static defaultWindowsHeight = 2;
 				static defaultDoorLen = 1;
 				static defaultDoorHeight = 2;
+				
+				static defaultFrameColor = "white";
+				static defaultGlassColor = "blue";
+				static defaultWindowsHeight = 1.5;
+				static defaultWindowFrameWight = Wall.wallWight + 0.05;
+				static defaultWindowFrameBuff = 0.1;
+				static defaultFrameThicknes = 0.1;
+				static defaultGlassOpacity = 0.4;
+
+				static wallCount = 0;
+				static wallsArr = [];
+				static windowsArr = [];
+				static windowCount = 0;
 				
 				constructor(lenght, isXwall, posX, posZ){
 					this.color = Wall.defaultColor;
@@ -84,7 +95,59 @@
 					this.render = csg.toMesh();
 					this.render.material = this.material;
 					this.render.position.set( this.posX, this.posY, this.posZ );
+
+					this.addWindowFrame(windowLen,isXwall);
+
 				}
+				addWindowFrame(windowLen,isXwall){
+					let window = new THREE.Group();
+					const frameMaterial = new THREE.MeshPhongMaterial( {color: Wall.defaultFrameColor, shininess: Wall.defaultShininess} );
+					const glassMaterial = new THREE.MeshPhysicalMaterial( {color:Wall.defaultGlassColor, transparent: true, opacity: Wall.defaultGlassOpacity} );
+					let frameGeometryHor,frameGeometryVer,glassGeometry;
+					if(isXwall){
+						frameGeometryHor = new THREE.BoxGeometry( windowLen, Wall.defaultWindowFrameBuff, Wall.defaultWindowFrameWight );
+						frameGeometryVer  = new THREE.BoxGeometry( Wall.defaultWindowFrameBuff, Wall.defaultWindowsHeight+Wall.defaultWindowFrameBuff, Wall.defaultWindowFrameWight);
+						glassGeometry = new THREE.BoxGeometry( windowLen, Wall.defaultWindowsHeight, Wall.defaultFrameThicknes);
+					}else{
+						frameGeometryHor = new THREE.BoxGeometry(  Wall.defaultWindowFrameWight, Wall.defaultWindowFrameBuff, windowLen );
+						frameGeometryVer  = new THREE.BoxGeometry( Wall.defaultWindowFrameWight, Wall.defaultWindowsHeight+Wall.defaultWindowFrameBuff, Wall.defaultWindowFrameBuff);
+						glassGeometry = new THREE.BoxGeometry( Wall.defaultFrameThicknes, Wall.defaultWindowsHeight, windowLen );
+					}
+					const windowFrameTop = new THREE.Mesh(frameGeometryHor, frameMaterial);
+					windowFrameTop.position.set(this.posX, this.posY+Wall.defaultWindowsHeight/2, this.posZ);					
+					const windowFrameBot = new THREE.Mesh(frameGeometryHor, frameMaterial);
+					windowFrameBot.position.set(this.posX, this.posY-Wall.defaultWindowsHeight/2, this.posZ);
+
+					const windowFrameLeft = new THREE.Mesh(frameGeometryVer, frameMaterial);
+					const windowFrameRight = new THREE.Mesh(frameGeometryVer, frameMaterial);
+					const glass = new THREE.Mesh(glassGeometry, glassMaterial);
+					if(isXwall){
+						windowFrameLeft.position.set(this.posX+windowLen/2, this.posY, this.posZ);
+						windowFrameRight.position.set(this.posX-windowLen/2, this.posY, this.posZ);
+					}else{
+						windowFrameLeft.position.set(this.posX, this.posY, this.posZ+windowLen/2);
+						windowFrameRight.position.set(this.posX, this.posY, this.posZ-windowLen/2);
+					}
+					glass.position.set(this.posX, this.posY, this.posZ);
+					window.add(windowFrameTop);
+					window.add(windowFrameBot);
+					window.add(windowFrameLeft);
+					window.add(windowFrameRight);
+					window.add(glass);
+					
+
+					Wall.windowsArr[Wall.windowCount] = window;
+					Wall.windowCount++;
+					window.receiveShadow = true;
+					window.castShadow = true;
+				}
+
+				static generateWindows(){
+					for(let i = 0; i<Wall.windowCount; i++){
+						house.add(Wall.windowsArr[i]);
+					}
+				}
+
 				addDoor(){
 					
 					const isXwall = (this.lenghtX > this.lenghtZ);
@@ -109,6 +172,9 @@
 					this.material = new THREE.MeshPhongMaterial( {color: this.color, shininess: Wall.defaultShininess} );
 					reRender();
 				}
+				rotate(angle){
+					this.render.rotation.y += angle;
+				}
 				static newXWall(lenght,posX, posY){
 					Wall.wallsArr[Wall.wallCount] = new Wall (lenght, 1, posX, posY);
 					Wall.wallCount++;
@@ -128,40 +194,46 @@
 			}
 			
 			Wall.defaultColor = "yellow";
-			Wall.newZWall(6, 6.90 , 1);
-			Wall.wallsArr[Wall.wallCount-1].addDoor();
+			Wall.newZWall(6, 6.90 , 1);		
 			Wall.newXWall(2.2, 5.9 ,3.9);
-			Wall.wallsArr[Wall.wallCount-1].addWindow(1);
 			Wall.newZWall(4, 4.90 , 6);
-			Wall.wallsArr[Wall.wallCount-1].addWindow(2);
-			Wall.newXWall(8, 1 ,7.9);
+			Wall.newXWall(4, -1 ,7.9);
+			Wall.wallsArr[Wall.wallCount-1].addDoor();
+			Wall.newXWall(4, 3 ,7.9);
 			Wall.newZWall(4, -2.9 ,5.8);
 			Wall.newXWall(4, -5 ,3.9);
 			Wall.wallsArr[Wall.wallCount-1].addWindow(2);
 			Wall.newZWall(6, -6.9 ,1);
+			Wall.wallsArr[Wall.wallCount-1].addWindow(2);
 			Wall.newXWall(4, -5 ,-1.9);	
+			Wall.wallsArr[Wall.wallCount-1].addWindow(2);
 			Wall.newZWall(4.2, -2.9 ,-3.9);
 			Wall.newXWall(8, 1 ,-5.9);	
-			Wall.wallsArr[Wall.wallCount-1].addWindow(5);
+			Wall.wallsArr[Wall.wallCount-1].addWindow(4);
 			Wall.newZWall(4, 4.90 , -4);
 			Wall.newXWall(2.2, 5.9 ,-1.9);
-			Wall.defaultColor = "lightyellow";
-			Wall.newXWall(5, 1 ,-1.9);
+			Wall.wallsArr[Wall.wallCount-1].addWindow(1);
+			Wall.newXWall(3.8, 2.9 ,-1.9);
+			Wall.newXWall(3.8, -0.9 ,-1.9);
+			Wall.wallsArr[Wall.wallCount-1].addDoor();
+			Wall.newXWall(2.6, -1.5 ,3.9);
+			Wall.wallsArr[Wall.wallCount-1].addDoor();
+			Wall.newZWall(4, 2 , 0	);
+			Wall.wallsArr[Wall.wallCount-1].addDoor();
+			Wall.newZWall(2, 2 , 3	);
+			Wall.newZWall(4, 2 , 6	);
+			Wall.wallsArr[Wall.wallCount-1].addDoor();
+			Wall.newXWall(2.2, 3.1 , 2);
+			Wall.newXWall(2.08, 4.51 , 2.9);
+			Wall.wallsArr[Wall.wallCount-1].rotate(-1.2);
+			Wall.newXWall(2.5, 0.8 , 3.90	);
 
 			Wall.generateAllWalls();
-
+			Wall.generateWindows();
 
 			scene.add(house);
 
-			var geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 ),
-				material = new THREE.MeshPhongMaterial( {color:'crimson', shininess: 100} );
-				
-			var cube = new THREE.Mesh( geometry, material );
-				cube.position.set( 0.5, 0.1, 0.51 );
-				cube.receiveShadow = true;
-				cube.castShadow = true;
 			
-			scene.add( cube );
 			
 		</script>
 		
