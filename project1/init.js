@@ -89,7 +89,7 @@ var ambLight = new THREE.AmbientLight( 'white', 0.2 );
 // помощна координатна система
 
 var oxyz = new THREE.AxesHelper( 16 );
-//	scene.add( oxyz );
+	scene.add( oxyz );
 	
 	
 // интерактивно въртене

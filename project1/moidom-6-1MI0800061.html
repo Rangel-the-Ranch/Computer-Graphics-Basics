@@ -15,17 +15,24 @@
 		</script>
 		
 		<script src="init.js"></script>
+		<script src="CSG.js"></script>
 			
 		<script>
 
+			let house = new THREE.Group();
+
 			class Wall{
-				static defaultColor = "yellow";
-				static defaultShininess = 10;
 				static wallWight = 0.2;
-				static wallHeight = 4;
+				static wallHeight = 3;
 				static wallPosY = Wall.wallHeight/2 - 0.01;
 				static wallCount = 0;
 				static wallsArr = [];
+
+				static defaultColor = "yellow";
+				static defaultShininess = 10;
+				static defaultWindowsHeight = 2;
+				static defaultDoorLen = 1;
+				static defaultDoorHeight = 2;
 				
 				constructor(lenght, isXwall, posX, posZ){
 					this.color = Wall.defaultColor;
@@ -42,20 +49,65 @@
 						this.lenghtX = Wall.wallWight;
 						this.lenghtZ = lenght;
 					}
-
-
+					this.geometry = new THREE.BoxGeometry( this.lenghtX, this.lenghtY, this.lenghtZ );
+					this.material = new THREE.MeshPhongMaterial( {color: this.color, shininess: Wall.defaultShininess} );
+					
+					this.reRender();
 				}
+				reRender(){
+					this.render = new THREE.Mesh( this.geometry, this.material );
+					this.render.position.set( this.posX, this.posY, this.posZ );
+				}
+				shadows(recive,cast){
+					this.render.receiveShadow = recive;
+					this.render.castShadow = cast;
+				}
+
 				generateWall(){
-					const wallGeometry = new THREE.BoxGeometry( this.lenghtX, this.lenghtY, this.lenghtZ );
-					const wallMaterial = new THREE.MeshPhongMaterial( {color: this.color, shininess: Wall.defaultShininess} );
-					const wall = new THREE.Mesh( wallGeometry, wallMaterial );
-					wall.position.set( this.posX, this.posY, this.posZ );
-					//wall.receiveShadow = true;
-					//wall.castShadow = true;
-					scene.add(wall);
+					this.shadows(1,1);
+					house.add(this.render);
+				}
+				addWindow(windowLen){
+					const isXwall = (this.lenghtX > this.lenghtZ);
+					let hole;
+					if(isXwall){
+						hole = new THREE.Mesh( new THREE.BoxGeometry( windowLen, Wall.defaultWindowsHeight, this.lenghtZ ));
+					}else{
+						hole = new THREE.Mesh( new THREE.BoxGeometry( this.lenghtX, Wall.defaultWindowsHeight, windowLen ));
+					
+					}
+					
+					const csg = new CSG();
+					const tempRend = new THREE.Mesh( this.geometry )
+					csg.subtract( [tempRend, hole] );
+
+					this.render = csg.toMesh();
+					this.render.material = this.material;
+					this.render.position.set( this.posX, this.posY, this.posZ );
+				}
+				addDoor(){
+					
+					const isXwall = (this.lenghtX > this.lenghtZ);
+					let hole;
+					if(isXwall){
+						hole = new THREE.Mesh( new THREE.BoxGeometry( Wall.defaultDoorLen, Wall.defaultDoorHeight, this.lenghtZ ));
+					}else{
+						hole = new THREE.Mesh( new THREE.BoxGeometry( this.lenghtX, Wall.defaultDoorHeight, Wall.defaultDoorLen ));
+					
+					}
+					hole.position.set(0,this.posY-Wall.defaultDoorHeight,0);
+					const csg = new CSG();
+					const tempRend = new THREE.Mesh( this.geometry )
+					csg.subtract( [tempRend, hole] );
+
+					this.render = csg.toMesh();
+					this.render.material = this.material;
+					this.render.position.set( this.posX, this.posY, this.posZ );
 				}
 				paint(color){
-					this.color = color; 
+					this.color = color;
+					this.material = new THREE.MeshPhongMaterial( {color: this.color, shininess: Wall.defaultShininess} );
+					reRender();
 				}
 				static newXWall(lenght,posX, posY){
 					Wall.wallsArr[Wall.wallCount] = new Wall (lenght, 1, posX, posY);
@@ -74,31 +126,32 @@
 
 
 			}
+			
 			Wall.defaultColor = "yellow";
 			Wall.newZWall(6, 6.90 , 1);
+			Wall.wallsArr[Wall.wallCount-1].addDoor();
 			Wall.newXWall(2.2, 5.9 ,3.9);
+			Wall.wallsArr[Wall.wallCount-1].addWindow(1);
 			Wall.newZWall(4, 4.90 , 6);
+			Wall.wallsArr[Wall.wallCount-1].addWindow(2);
 			Wall.newXWall(8, 1 ,7.9);
 			Wall.newZWall(4, -2.9 ,5.8);
 			Wall.newXWall(4, -5 ,3.9);
+			Wall.wallsArr[Wall.wallCount-1].addWindow(2);
 			Wall.newZWall(6, -6.9 ,1);
 			Wall.newXWall(4, -5 ,-1.9);	
 			Wall.newZWall(4.2, -2.9 ,-3.9);
 			Wall.newXWall(8, 1 ,-5.9);	
+			Wall.wallsArr[Wall.wallCount-1].addWindow(5);
 			Wall.newZWall(4, 4.90 , -4);
 			Wall.newXWall(2.2, 5.9 ,-1.9);
-
+			Wall.defaultColor = "lightyellow";
+			Wall.newXWall(5, 1 ,-1.9);
 
 			Wall.generateAllWalls();
 
-			//Wall.color = "red";
-			//Wall.newZWall(6, 5.90 , 1);
 
-			
-			
-
-
-
+			scene.add(house);
 
 			var geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 ),
 				material = new THREE.MeshPhongMaterial( {color:'crimson', shininess: 100} );
