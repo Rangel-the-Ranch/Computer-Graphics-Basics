@@ -395,7 +395,7 @@
 					Furniture.All.add(ashTray);
 					Furniture.FloorCount++;			
 				}
-				static addDogBow(posX,posY,posZ,color){
+				static addBow(posX,posY,posZ,color){
 					const scaleDown = 1/15;
 					const body = new THREE.Mesh( new THREE.CylinderGeometry( 2.5*scaleDown, 2*scaleDown, 1*scaleDown, 32 ) );
 					const hole = new THREE.Mesh( new THREE.CylinderGeometry( 2.4*scaleDown, 1.9*scaleDown, 1*scaleDown, 23 ));
@@ -490,7 +490,6 @@
 					cylinder.castShadow = true;
 					cylinder.receiveShadow = true;
 			
-			
 					var geometry = new THREE.CylinderGeometry( 0.2, 0.3,1.7, 32 );
 					var material = new THREE.MeshPhongMaterial( {color: "grey"} );
 					var cylinder = new THREE.Mesh( geometry, material );
@@ -550,6 +549,30 @@
 					Furniture.FloorCount++;	
 
 				}
+				static addGlassCup(posX,posY,posZ,color,height){
+
+					let glassCup = new THREE.Group();
+					const deScale = 1/20;
+					const glassBot = 1, thicknes = 0.3;
+					const glassHeight = height;
+					const glassMaterial = new THREE.MeshPhysicalMaterial( {color:color, transparent: true, opacity: 0.4} );
+					const glassMaterial2 = new THREE.MeshPhysicalMaterial( {color:color, transparent: true, opacity: 0.5} );
+					const outer =  new THREE.Mesh(new THREE.CylinderGeometry( glassBot*deScale, glassBot*deScale, glassHeight*deScale, 8 ) );
+					const inner = new THREE.Mesh( new THREE.CylinderGeometry( (glassBot-0.1)*deScale, (glassBot-0.1)*deScale, glassHeight*deScale, 80 ) );
+					const bot =  new THREE.Mesh(new THREE.CylinderGeometry( (glassBot+0.01)*deScale, (glassBot+0.01)*deScale, thicknes*deScale, 8 ), glassMaterial2 );
+					bot.position.set(0,(-glassHeight/2+thicknes/2+0.0001)*(deScale) ,0);
+					const csg = new CSG();
+					csg.subtract( [outer, inner] );
+					const Main = csg.toMesh();
+					Main.material =glassMaterial;
+
+					glassCup.add(Main,bot);
+					glassCup.position.set(posX,posY+glassBot*deScale,posZ)
+
+					Furniture.All.add(glassCup);
+					Furniture.FloorCount++;		
+
+				}
 				static generateAll(){
 					house.add(Furniture.All);
 				}
@@ -607,8 +630,15 @@
 			Furniture.addTable(-0.5,1,"#663300");
 			Furniture.addAshtray(-0.5,0.85,0.8);
 			Furniture.addHammock(-7,10,Math.PI/5);
-			Furniture.addDogBow(-2.5,0.05,4.2,"lightgreen");
+			
 			Furniture.addStatue(8,-8,-Math.PI/4);
+			Furniture.addBow(-0.3,0.82,0.4,"white");
+			Furniture.addBow(-0.3,0.82,1.5,"grey");
+			Furniture.addGlassCup(-0.3,0.82,0,"blue",3);
+			Furniture.addGlassCup(-0.7,0.82,0.3,"red",3);
+			Furniture.addGlassCup(-0.8,0.81,1.4,"blue",2.4);
+			Furniture.addGlassCup(-0.9,0.85,1.2,"grey",4);
+			//Furniture.addGlassCup(-0.3,0.85,0.4,"blue",3);
 
 
 			Furniture.generateAll();

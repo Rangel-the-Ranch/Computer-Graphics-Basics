@@ -27,20 +27,24 @@
 			camera.lookAt( new THREE.Vector3() );
 
 		
-			// Широк цилиндър (външната част на тръбата)
-			var outer = new THREE.Mesh( new THREE.CylinderGeometry( 1.5, 1.5, 7, 80 ) );
-			
-			// Тесен цилиндър, малко по-дълъг (дупката на тръбата)
-			var inner = new THREE.Mesh( new THREE.CylinderGeometry( 1, 1, 8, 80 ) );
-
-			var csg = new CSG();
+			let glassCup = new THREE.Group();
+			const deScale = 1;
+			const glassBot = 1, thicknes = 0.3;
+			const glassHeight = 3;
+			const glassMaterial = new THREE.MeshPhysicalMaterial( {color:"blue", transparent: true, opacity: 0.4} );
+			const glassMaterial2 = new THREE.MeshPhysicalMaterial( {color:"blue", transparent: true, opacity: 0.8} );
+			const outer =  new THREE.Mesh(new THREE.CylinderGeometry( glassBot*deScale, glassBot*deScale, glassHeight*deScale, 8 ) );
+			const inner = new THREE.Mesh( new THREE.CylinderGeometry( (glassBot-0.1)*deScale, (glassBot-0.1)*deScale, glassHeight*deScale, 80 ) );
+			const bot =  new THREE.Mesh(new THREE.CylinderGeometry( (glassBot+0.01)*deScale, (glassBot+0.01)*deScale, thicknes*deScale, 8 ), glassMaterial2 );
+			bot.position.set(0,-glassHeight/2+thicknes/2+0.01 ,0);
+			const csg = new CSG();
 			csg.subtract( [outer, inner] );
-			
-			// Преобразуваме обратно BSP тръбата до Three.js тръба
-			var tube = csg.toMesh();
-			tube.material = new THREE.MeshLambertMaterial({color:'crimson'});
-			scene.add(tube);
-			
+			const Main = csg.toMesh();
+			Main.material =glassMaterial;
+
+			glassCup.add(Main,bot);
+
+			scene.add(glassCup);
 			
 			var light = new THREE.PointLight();
 			light.position.set( 0, 5, 10 );
@@ -50,9 +54,9 @@
 			function drawFrame()
 			{
 				// въртим тръбата
-				tube.rotation.x += 0.005;
-				tube.rotation.y += 0.003;
-				tube.rotation.z += 0.010;
+				glassCup.rotation.x += 0.005;
+				glassCup.rotation.y += 0.003;
+				glassCup.rotation.z += 0.010;
 				
 				renderer.render( scene, camera );
 			}
