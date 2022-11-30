@@ -142,7 +142,7 @@
 					window.add(windowFrameLeft);
 					window.add(windowFrameRight);
 					window.add(glass);
-					
+					/*
 					windowFrameTop.castShadow = true;
 					windowFrameBot.castShadow = true;
 					windowFrameLeft.castShadow = true;
@@ -151,6 +151,7 @@
 					windowFrameBot.receiveShadow = true;
 					windowFrameLeft.receiveShadow = true;
 					windowFrameRight.receiveShadow = true;
+					*/
 					glass.castShadow = false;
 					glass.receiveShadow = false;
 					Wall.windowsArr[Wall.windowCount] = window;
@@ -213,7 +214,7 @@
 					door.add(doorFrameRight);
 					door.add(doorFrameTop);
 					door.add(doorFrameLeft);
-
+					/*
 					doorFrameRight.castShadow = true;
 					doorFrameTop.castShadow = true;
 					doorFrameLeft.castShadow = true;
@@ -221,6 +222,7 @@
 					doorFrameTop.receiveShadow = true;
 					doorFrameLeft.receiveShadow = true;
 					Wall.doorArr[Wall.doorCount] = door;
+					*/
 					Wall.doorCount++;
 					
 				}
@@ -650,8 +652,8 @@
 					}else{
 						handle1.position.set(0.2,+0.3,-0.3);
 					}
-					handle1.castShadow = true;
-					handle1.receiveShadow = true;
+					//handle1.castShadow = true;
+					//handle1.receiveShadow = true;
 					all.add(handle1);
 
 					all.position.set(posX,posY,posZ);
@@ -659,7 +661,77 @@
 					Furniture.All.add(all);
 					Furniture.FloorCount++;
 				}
+				static addKitchenSink(posX,posY,posZ,color){
+					let all = new THREE.Group();
+					const deScale = 1/2;
+					const sinkMaterial = new THREE.MeshPhongMaterial( {color: "silver", shininess: 40} )
+					const outer =  new THREE.Mesh(new THREE.BoxGeometry( 2*deScale,0.5*deScale,1*deScale ));
+					outer.position.set(-0.1,0,0);
+					const inner = new THREE.Mesh( new THREE.CylinderGeometry( 0.5*deScale,0.35*deScale,0.8*deScale,20));
+					const inner2 = new THREE.Mesh( new THREE.CylinderGeometry(  0.5*deScale,0.35*deScale,0.8*deScale,20));
+					const inner3 = new THREE.Mesh( new THREE.BoxGeometry( 0.75*deScale,0.1*deScale,0.8*deScale));
+					inner.position.set(0.2*deScale,0.2*deScale,0*deScale);
+					inner2.position.set(-0*deScale,0.2*deScale,0*deScale);
+					inner3.position.set(-0.7*deScale,0.2*deScale,0*deScale);
+					const csg = new CSG();
+					csg.subtract( [outer, inner,inner2,inner3] );
+					const Main = csg.toMesh();
+					Main.material = sinkMaterial;
+					const DrawerMaterial = new THREE.MeshPhongMaterial( {color:color} )
+					const DrawerGeometry = new THREE.BoxGeometry(1.6,0.7,0.6);
+					const Drawer = new THREE.Mesh(DrawerGeometry,DrawerMaterial);
+					const wallOf1g = new THREE.BoxGeometry(1.6,0.7,0.05);
+					const wallOf1= new THREE.Mesh(wallOf1g,DrawerMaterial);
+					const wallOf2g = new THREE.BoxGeometry(1.6,0.7,0.1);
+					const wallOf2= new THREE.Mesh(wallOf1g,DrawerMaterial);
+					const wallOf3g = new THREE.BoxGeometry(0.5,0.7,0.55);
+					const wallOf3= new THREE.Mesh(wallOf3g,DrawerMaterial);
+					const wallOf4g = new THREE.BoxGeometry(0.1,0.7,0.55);
+					const wallOf4= new THREE.Mesh(wallOf4g,DrawerMaterial);
+					const sink1g = new THREE.BoxGeometry(0.05,0.25,0.05);
+					const sink1= new THREE.Mesh(sink1g,sinkMaterial);
+					const sink2g = new THREE.BoxGeometry(0.2,0.05,0.05);
+					const sink2= new THREE.Mesh(sink2g,sinkMaterial);
+					Main.position.set(0,0.02,0);
+					Drawer.position.set(-0.3,-0.5,0);
+					wallOf1.position.set(-0.3,-0.2,0.28);
+					wallOf2.position.set(-0.3,-0.2,-0.25);
+					wallOf3.position.set(-0.85,-0.2,-0);
+					wallOf4.position.set(0.45,-0.2,-0);
+					sink1.position.set(0.35,0.2,-0);
+					sink2.position.set(0.25,0.30,-0);
+					all.add(Drawer,wallOf1,wallOf2,wallOf3,wallOf4);
+					all.add(sink1,sink2);
+					const doorBuffer = 0.02;
+					const doorGeometry = new THREE.BoxGeometry(0.05,1-doorBuffer,0.8-doorBuffer);
+					const door = new THREE.Mesh(doorGeometry,DrawerMaterial);
+					door.position.set(0.1,-0.35,0.33);
+					door.rotation.y += Math.PI/2;
+					all.add(door);
+					const door2 = new THREE.Mesh(doorGeometry,DrawerMaterial);
+					door2.position.set(-0.7,-0.35,0.33);
+					door2.rotation.y += Math.PI/2;
+					all.add(door2);
+					const handleMat = new THREE.MeshPhongMaterial( {color:"silver"} );
+					const handle1geom = new THREE.TorusGeometry(0.1,0.01,7,32,Math.PI);
+					const handle1 = new THREE.Mesh(handle1geom,handleMat);
+					handle1.position.set(-0.2,0,0.34);
+					handle1.rotation.z -= Math.PI/2;
+					handle1.rotation.y -= Math.PI/2;
+					const handle2 = new THREE.Mesh(handle1geom,handleMat);
+					handle2.position.set(-0.4,0,0.34);
+					handle2.rotation.z -= Math.PI/2;
+					handle2.rotation.y -= Math.PI/2;
 
+
+					all.add(Main,handle1,handle2);
+
+					all.position.set(posX,posY,posZ);
+					//all.rotation.y += Math.PI;
+					Furniture.All.add(all);
+					Furniture.FloorCount++;
+
+				}
 				static generateAll(){
 					house.add(Furniture.All);
 				}
@@ -702,9 +774,9 @@
 			Wall.newXWall(2.2, 3.1 , 2);
 			Wall.newXWall(2.08, 4.51 , 2.9);
 			Wall.wallsArr[Wall.wallCount-1].rotate(-1.2);
-			Wall.newXWall(2.5, 0.8 , 3.90	);
-			Wall.generateAllWalls();
-			//Wall.generateAll();
+			Wall.newXWall(2.5, 0.8 , 3.90);
+			//Wall.generateAllWalls();
+			Wall.generateAll();
 
 			Floor.newFloor(-2.5,1,9,6,"brown");
 			Floor.newFloor(1,-4,8,4,"brown");
@@ -713,16 +785,18 @@
 			Floor.newFloor(-0.5,6,5,4,"brown");
 			Floor.newFloor(3.5,6,3,4,"grey");
 			Floor.newFloor(3.5,3,3,2,"grey");
-			//Floor.generateAll();
+			Floor.generateAll();
 
-			/*
+			
 			Furniture.addTable(-0.5,1,"#663300");
 			Furniture.addAshtray(-0.5,0.82,0.8);
 			Furniture.addHammock(-7,10,Math.PI/5);
-			*/
+			
 			Furniture.kitchenDrawers();
+			Furniture.addKitchenSink(5.5,1,-1.5,"#663300");
+			//Furniture.addBotDrawer(1,1.6,0,false,"#663300",Math.PI);
 			//Furniture.addDrawer(0,2,0,true,"#663300",Math.PI);
-			/*
+			
 			Furniture.addStatue(8,-8,-Math.PI/4);
 			Furniture.addBow(-0.3,0.82,0.4,"white");
 			Furniture.addBow(-0.3,0.82,1.5,"grey");
@@ -732,7 +806,7 @@
 			Furniture.addGlassCup(-0.8,0.81,1.4,"blue",2.4);
 			Furniture.addGlassCup(-0.9,0.85,1.2,"grey",4);
 			//Furniture.addGlassCup(-0.3,0.85,0.4,"blue",3);
-			*/
+			
 
 
 			Furniture.generateAll();
