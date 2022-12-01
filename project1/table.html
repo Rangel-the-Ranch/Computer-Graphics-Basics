@@ -22,21 +22,38 @@
 			camera.position.set( 0, 0, 16 );
 			camera.lookAt( new THREE.Vector3() );
 
-		//specular: 'white'
+
 			let all = new THREE.Group();
-			const sinkMaterial = new THREE.MeshPhongMaterial( {color: "silver", shininess: 40} )
-			const outer =  new THREE.Mesh(new THREE.BoxGeometry( 1.4,0.5,1 ));
-			const inner = new THREE.Mesh( new THREE.CylinderGeometry( 0.5,0.35,0.8,30));
-			const inner2 = new THREE.Mesh( new THREE.CylinderGeometry( 0.5,0.35,0.8,30));
 
-			inner.position.set(0.2,0.2,0);
-			inner2.position.set(-0,0.2,0);
-			const csg = new CSG();
-			csg.subtract( [outer, inner,inner2] );
-			const Main = csg.toMesh();
-			Main.material = sinkMaterial;
+			const color = "grey";
+			const legLen = 0.5;
 
-			all.add(Main);
+			const material = new THREE.MeshPhongMaterial( {color: color} )
+			const base =  new THREE.Mesh(new THREE.CylinderGeometry( 0.3,0.3,0.1 ,32 ),material);
+			const baseInner = new THREE.Mesh(new THREE.CylinderGeometry( 0.2,0.2,0.1 ,32 ),material);
+			const base2 = new THREE.Mesh(new THREE.BoxGeometry( 0.6,0.1,0.5 ),material);
+			const base2Inner = new THREE.Mesh(new THREE.BoxGeometry( 0.55,0.1,0.5 ),material);
+			const base3 = new THREE.Mesh(new THREE.BoxGeometry( 0.65,0.7,0.1 ),material);
+			const legGeom = new THREE.CylinderGeometry( 0.05,0.05,legLen );
+			const legMat = new THREE.MeshPhongMaterial( {color: "silber"} );;
+			const leg1 =  new THREE.Mesh(legGeom,legMat);
+			leg1.rotation.x += Math.PI/2
+			leg1.position.set(-0.25,0,-0.82);
+			const leg2 =  new THREE.Mesh(legGeom,legMat);
+			leg2.rotation.x += Math.PI/2
+			leg2.position.set(0.25,0,-0.82);
+			const leg3 =  new THREE.Mesh(legGeom,legMat);
+			leg3.rotation.x += Math.PI/2
+			leg3.position.set(0.25,-0.6,-0.82);
+			const leg4 =  new THREE.Mesh(legGeom,legMat);
+			leg4.rotation.x += Math.PI/2
+			leg4.position.set(-0.25,-0.6,-0.82);
+			base2.position.set(0,0,-0.3);
+			base3.position.set(0,-0.3,-0.6);
+			baseInner.position.set(0,0.1,0);
+			base2Inner.position.set(0,0.1,-0.3);
+
+			all.add(base,base2,base3,baseInner,base2Inner,leg1,leg2,leg3,leg4);
 
 			scene.add(all);
 			
@@ -44,12 +61,12 @@
 			light.position.set( 0, 5, 10 );
 			scene.add( light );
 			
-			all.rotation.x += Math.PI/2;
+			//all.rotation.x += Math.PI/2;
 			function drawFrame()
 			{
-				//all.rotation.x += 0.005;
-				//all.rotation.y += 0.003;
-				//all.rotation.z += 0.010;
+				all.rotation.x += 0.005;
+				all.rotation.y += 0.003;
+				all.rotation.z += 0.010;
 				
 				renderer.render( scene, camera );
 			}

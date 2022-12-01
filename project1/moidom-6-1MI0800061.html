@@ -221,8 +221,9 @@
 					doorFrameRight.receiveShadow = true;
 					doorFrameTop.receiveShadow = true;
 					doorFrameLeft.receiveShadow = true;
-					Wall.doorArr[Wall.doorCount] = door;
 					*/
+					Wall.doorArr[Wall.doorCount] = door;
+					
 					Wall.doorCount++;
 					
 				}
@@ -575,24 +576,30 @@
 					Furniture.FloorCount++;		
 
 				}
-				static kitchenDrawers(){
+				static kitchenBase(){
 					let all = new THREE.Group();
 					const baseMaterial = new THREE.MeshPhongMaterial( {color:"#663300"} );
-					const baseGeometry = new THREE.BoxGeometry(0.5,0.15,2.8);
+					const baseGeometry = new THREE.BoxGeometry(0.5,0.15,4.3);
+					
 					const base = new THREE.Mesh(baseGeometry,baseMaterial);
-					all.add(base);
+					base.receiveShadow = true;
+					const baseGeometry2 = new THREE.BoxGeometry(0.85,1,0.7);
+					const base2 = new THREE.Mesh(baseGeometry2,baseMaterial);
+					base.position.set(0,0,-0.5)
+					base2.position.set(-0.18,0.55,-2.25);
+					base2.receiveShadow = true;
+					base2.castShadow = true;
+					all.add(base,base2);
+					const baseGeometry3 = new THREE.BoxGeometry(2,0.15,0.5);
+					const base3 = new THREE.Mesh(baseGeometry3,baseMaterial);
+					base3.position.set(-1.2,0,-2.3);
+					all.add(base3);
 					
 					
-					all.position.set(6.6,0.07,1);
+					all.position.set(6.6,0.07,0.8);
 					Furniture.All.add(all);
 					Furniture.FloorCount++;
 
-					Furniture.addBotDrawer(6.5,0.6,0,false,"#663300",Math.PI);
-					Furniture.addBotDrawer(6.5,0.6,0.4,true,"#663300",Math.PI);
-					Furniture.addBotDrawer(6.5,0.6,0.8,false,"#663300",Math.PI);
-					Furniture.addBotDrawer(6.5,0.6,1.2,true,"#663300",Math.PI);
-					Furniture.addBotDrawer(6.5,0.6,1.6,false,"#663300",Math.PI);
-					Furniture.addBotDrawer(6.5,0.6,2,true,"#663300",Math.PI);
 
 				}
 				static addTopDrawer(posX,posY,posZ,leftDrawer,color,rot){
@@ -661,10 +668,58 @@
 					Furniture.All.add(all);
 					Furniture.FloorCount++;
 				}
+				static addDrawer2(posX,posY,posZ,leftDrawer,color,rot){
+					let all = new THREE.Group();
+					const doorBuffer = 0.01;
+					const baseMaterial = new THREE.MeshPhongMaterial( {color:color} );
+					const baseGeometry = new THREE.BoxGeometry(0.4,1,0.6);
+					const base = new THREE.Mesh(baseGeometry,baseMaterial);
+					const doorGeometry = new THREE.BoxGeometry(0.05,0.2-doorBuffer,0.6-doorBuffer);
+					const door1 = new THREE.Mesh(doorGeometry,baseMaterial);
+					door1.position.set(0.23,0.4,0);
+					const door2 = new THREE.Mesh(doorGeometry,baseMaterial);
+					door2.position.set(0.23,0.2,0);
+					const door3 = new THREE.Mesh(doorGeometry,baseMaterial);
+					door3.position.set(0.23,0,0);
+					const doorGeometry2 = new THREE.BoxGeometry(0.05,0.4-doorBuffer,0.6-doorBuffer);
+					const door4 = new THREE.Mesh(doorGeometry2,baseMaterial);
+					door4.position.set(0.23,-0.3,0);
+					base.castShadow = true;
+					base.receiveShadow = true;
+					all.add(base,door1,door2,door3,door4);
+					const handleMat = new THREE.MeshPhongMaterial( {color:"silver"} );
+					const handle1geom = new THREE.TorusGeometry(0.1,0.01,7,32,Math.PI);
+					const handle1 = new THREE.Mesh(handle1geom,handleMat);
+					handle1.rotation.x -= Math.PI/2;
+					handle1.rotation.z -= Math.PI/2;
+					handle1.position.set(0.2,0.4,0);
+					const handle2 = new THREE.Mesh(handle1geom,handleMat);
+					handle2.rotation.x -= Math.PI/2;
+					handle2.rotation.z -= Math.PI/2;
+					handle2.position.set(0.2,0.2,0);
+					const handle3 = new THREE.Mesh(handle1geom,handleMat);
+					handle3.rotation.x -= Math.PI/2;
+					handle3.rotation.z -= Math.PI/2;
+					handle3.position.set(0.2,0,0);
+					const handle4 = new THREE.Mesh(handle1geom,handleMat);
+					handle4.rotation.z -= Math.PI/2;
+					if(leftDrawer){
+						handle4.position.set(0.2,-0.3,0.2);
+					}else{
+						handle4.position.set(0.2,-0.3,-0.2);
+					}
+
+					all.add(handle1,handle2,handle3,handle4);	
+					all.position.set(posX,posY,posZ);
+					all.rotation.y += rot;
+					Furniture.All.add(all);
+					Furniture.FloorCount++;
+					
+				}
 				static addKitchenSink(posX,posY,posZ,color){
 					let all = new THREE.Group();
 					const deScale = 1/2;
-					const sinkMaterial = new THREE.MeshPhongMaterial( {color: "silver", shininess: 40} )
+					const sinkMaterial = new THREE.MeshPhongMaterial( {color: "silver", shininess: 40,specular: 'white'} )
 					const outer =  new THREE.Mesh(new THREE.BoxGeometry( 2*deScale,0.5*deScale,1*deScale ));
 					outer.position.set(-0.1,0,0);
 					const inner = new THREE.Mesh( new THREE.CylinderGeometry( 0.5*deScale,0.35*deScale,0.8*deScale,20));
@@ -676,6 +731,7 @@
 					const csg = new CSG();
 					csg.subtract( [outer, inner,inner2,inner3] );
 					const Main = csg.toMesh();
+					Main.receiveShadow = true;
 					Main.material = sinkMaterial;
 					const DrawerMaterial = new THREE.MeshPhongMaterial( {color:color} )
 					const DrawerGeometry = new THREE.BoxGeometry(1.6,0.7,0.6);
@@ -694,6 +750,8 @@
 					const sink2= new THREE.Mesh(sink2g,sinkMaterial);
 					Main.position.set(0,0.02,0);
 					Drawer.position.set(-0.3,-0.5,0);
+					Drawer.castShadow = true;
+					
 					wallOf1.position.set(-0.3,-0.2,0.28);
 					wallOf2.position.set(-0.3,-0.2,-0.25);
 					wallOf3.position.set(-0.85,-0.2,-0);
@@ -722,7 +780,8 @@
 					handle2.position.set(-0.4,0,0.34);
 					handle2.rotation.z -= Math.PI/2;
 					handle2.rotation.y -= Math.PI/2;
-
+					door.receiveShadow = true;
+					door2.receiveShadow = true;
 
 					all.add(Main,handle1,handle2);
 
@@ -735,8 +794,44 @@
 				static generateAll(){
 					house.add(Furniture.All);
 				}
-				static addChair(posX,posY,poZ,rotation,color){
-
+				static addChair(posX,posZ,color,rot){
+					let all = new THREE.Group();
+					const deScale = 0.7;
+					const legLen = 0.5;
+					const material = new THREE.MeshPhongMaterial( {color: color} )
+					const base =  new THREE.Mesh(new THREE.CylinderGeometry( 0.3*deScale,0.3*deScale,0.1*deScale ,32 ),material);
+					const baseInner = new THREE.Mesh(new THREE.CylinderGeometry( 0.2*deScale,0.2*deScale,0.1*deScale ,32 ),material);
+					const base2 = new THREE.Mesh(new THREE.BoxGeometry( 0.6*deScale,0.1*deScale,0.5*deScale ),material);
+					const base2Inner = new THREE.Mesh(new THREE.BoxGeometry( 0.55*deScale,0.1*deScale,0.5*deScale ),material);
+					const base3 = new THREE.Mesh(new THREE.BoxGeometry( 0.65*deScale,0.7*deScale,0.1*deScale ),material);
+					const legGeom = new THREE.CylinderGeometry( 0.05*deScale,0.05*deScale,legLen*deScale );
+					const legMat = new THREE.MeshPhongMaterial( {color: "silver"} );;
+					const leg1 =  new THREE.Mesh(legGeom,legMat);
+					leg1.rotation.x += Math.PI/2
+					leg1.position.set(-0.25*deScale,0*deScale,-0.82*deScale);
+					const leg2 =  new THREE.Mesh(legGeom,legMat);
+					leg2.rotation.x += Math.PI/2
+					leg2.position.set(0.25*deScale,0*deScale,-0.82*deScale);
+					const leg3 =  new THREE.Mesh(legGeom,legMat);
+					leg3.rotation.x += Math.PI/2
+					leg3.position.set(0.25*deScale,-0.6*deScale,-0.82*deScale);
+					const leg4 =  new THREE.Mesh(legGeom,legMat);
+					leg4.rotation.x += Math.PI/2
+					leg4.position.set(-0.25*deScale,-0.6*deScale,-0.82*deScale);
+					base2.position.set(0*deScale,0*deScale,-0.3*deScale);
+					base3.position.set(0*deScale,-0.3*deScale,-0.6*deScale);
+					baseInner.position.set(0*deScale,0.1*deScale,0*deScale);
+					base2Inner.position.set(0*deScale,0.1*deScale,-0.3*deScale);
+					base3.castShadow = true;
+					base3.receiveShadow = true;
+					base2.castShadow = true;
+					base2.receiveShadow = true;
+					all.add(base,base2,base3,baseInner,base2Inner,leg1,leg2,leg3,leg4);
+					all.rotation.x -= Math.PI/2;
+					
+					all.position.set(posX,0.7,posZ);
+					all.rotation.z += rot;
+					scene.add(all);
 				}
 				
 			}
@@ -777,7 +872,7 @@
 			Wall.newXWall(2.5, 0.8 , 3.90);
 			//Wall.generateAllWalls();
 			Wall.generateAll();
-
+			
 			Floor.newFloor(-2.5,1,9,6,"brown");
 			Floor.newFloor(1,-4,8,4,"brown");
 			Floor.newFloor(4.5,0,5,4,"brown");
@@ -792,22 +887,46 @@
 			Furniture.addAshtray(-0.5,0.82,0.8);
 			Furniture.addHammock(-7,10,Math.PI/5);
 			
-			Furniture.kitchenDrawers();
-			Furniture.addKitchenSink(5.5,1,-1.5,"#663300");
-			//Furniture.addBotDrawer(1,1.6,0,false,"#663300",Math.PI);
-			//Furniture.addDrawer(0,2,0,true,"#663300",Math.PI);
+			Furniture.kitchenBase();
+			Furniture.addKitchenSink(5.5,0.97,-1.52,"#663300");
+			Furniture.addBow(5.5,1,-1.5,"lightblue");
+			Furniture.addBow(5.13,1.2,-1.5,"white");
+			Furniture.addBow(5.13,1.1,-1.5,"white");
+			Furniture.addBow(5.13,1.15,-1.5,"grey");
+			Furniture.addGlassCup(4.7,1.15,-1.6,"grey",3);
+			Furniture.addGlassCup(4.6,1.15,-1.4,"grey",3);
+			Furniture.addGlassCup(4.5,1.15,-1.5,"blue",3);
+			Furniture.addGlassCup(4.8,1.15,-1.4,"white",3);
+			Furniture.addGlassCup(4.85,1.15,-1.7,"white",3);
 			
 			Furniture.addStatue(8,-8,-Math.PI/4);
 			Furniture.addBow(-0.3,0.82,0.4,"white");
 			Furniture.addBow(-0.3,0.82,1.5,"grey");
 			Furniture.addBow(-0.6,0.82,1.2,"white");
+			
 			Furniture.addGlassCup(-0.3,0.82,0,"blue",3);
 			Furniture.addGlassCup(-0.7,0.82,0.3,"red",3);
 			Furniture.addGlassCup(-0.8,0.81,1.4,"blue",2.4);
 			Furniture.addGlassCup(-0.9,0.85,1.2,"grey",4);
-			//Furniture.addGlassCup(-0.3,0.85,0.4,"blue",3);
-			
 
+
+			Furniture.addDrawer2(6.6,0.6,-0.2,true,"#663300",Math.PI);
+			Furniture.addDrawer2(6.6,0.6,-0.8,false,"#663300",Math.PI);
+			
+			Furniture.addBotDrawer(6.6,0.6,0.5,false,"#663300",Math.PI);
+			Furniture.addBotDrawer(6.6,0.6,1.3,true,"#663300",Math.PI);
+			Furniture.addBotDrawer(6.6,0.6,2.1,false,"#663300",Math.PI);
+			
+			Furniture.addTopDrawer(6.6,2.5,-0.7,false,"#663300",Math.PI);
+			Furniture.addTopDrawer(6.6,2.5,0.1,true,"#663300",Math.PI);
+			Furniture.addTopDrawer(6.6,2.5,0.9,false,"#663300",Math.PI);
+			Furniture.addTopDrawer(6.6,2.5,1.7,true,"#663300",Math.PI);
+			Furniture.addChair(-1.3,1.4,"lightgreen",Math.PI/2);
+			Furniture.addChair(-1.3,0.4,"lightgreen",Math.PI/2);
+			Furniture.addChair(0.3,0.4,"lightgreen",-Math.PI/2.5);
+			Furniture.addChair(0.5,1.7,"lightgreen",-Math.PI/1.5);
+			
+			
 
 			Furniture.generateAll();
 
