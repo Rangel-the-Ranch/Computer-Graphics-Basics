@@ -592,7 +592,19 @@
 					const base3 = new THREE.Mesh(baseGeometry3,baseMaterial);
 					base3.position.set(-1.2,0,-2.3);
 					all.add(base3);
-					
+					const extrudeSettings = { depth: 1, bevelEnabled: false};
+
+					const shape = new THREE.Shape();
+					shape.moveTo(   0.1 ,0 );
+					shape.lineTo(   1 ,0 );
+					shape.lineTo(   1 ,2 );
+					shape.lineTo(   0.1, 0);
+					const mainGeometry = new THREE.ExtrudeGeometry( shape, extrudeSettings );
+					const main = new THREE.Mesh(mainGeometry,baseMaterial);
+					main.rotation.x += Math.PI/2;
+					main.position.set(-2.55,1,1.12);
+					main.receiveShadow = true;
+					all.add(main);
 					
 					all.position.set(6.6,0.07,0.8);
 					Furniture.All.add(all);
@@ -1216,6 +1228,114 @@
 					Furniture.All.add(all);
 					Furniture.FloorCount++;	
 				}
+				static addHangers(posX,posY,posZ,color,rot,size){
+					let all = new THREE.Group();
+					const unitSize = 0.3,hangerR = 0.02,hangerR2 = 0.05;
+
+					const material = new THREE.MeshPhongMaterial( {color: color});
+					const hangerMaterial = new THREE.MeshPhongMaterial( {color: "silver"});
+					const mainGeometry = new THREE.BoxGeometry(unitSize*size,unitSize,0.05);
+					
+					const main = new THREE.Mesh(mainGeometry,material);
+					main.position.set(unitSize*size/2-unitSize/2,0,0);
+					main.receiveShadow = true;
+					const hangerGeom1 = new THREE.CylinderGeometry(hangerR,hangerR,0.05);
+					const hangerGeom2 = new THREE.CylinderGeometry(hangerR2,hangerR2,0.02);
+					for(let i=0; i<size;i++){
+						const hanger1 = new THREE.Mesh(hangerGeom1,hangerMaterial);
+						const hanger2 = new THREE.Mesh(hangerGeom2,hangerMaterial,16);
+						hanger1.rotation.x += Math.PI/2;
+						hanger2.rotation.x += Math.PI/2;
+						hanger1.position.set(i*unitSize,0,0.05);
+						hanger2.position.set(i*unitSize,0,0.07);
+						all.add(hanger1,hanger2);
+					}
+					all.add(main);
+
+					all.position.set(posX,posY,posZ);
+					all.rotation.y += rot;
+					Furniture.All.add(all);
+					Furniture.FloorCount++;	
+
+				}
+				static addFridge(posX,posZ,rot){
+					let all = new THREE.Group();
+					const baseHeight = 0.1, baseLen = 0.6;
+					const bodyHeight = 1.6 , bodyLen = 0.6 , bodyWight = 0.8;
+					const material = new THREE.MeshPhongMaterial( {color: 0xd6d5d4});
+					const baseMat = new THREE.MeshPhongMaterial( {color: "black"});
+					const handleMat = new THREE.MeshPhongMaterial( {color: "grey"});
+					const baseGeom = new THREE.BoxGeometry(baseLen,baseHeight,baseLen);
+					const base = new THREE.Mesh(baseGeom,baseMat);
+					base.position.set(0,baseHeight/2,0);
+					all.add(base);
+					const bodyGeom = new THREE.BoxGeometry(bodyWight,bodyHeight,bodyLen);
+					const body = new THREE.Mesh(bodyGeom,material);
+					body.position.set(0,(baseHeight+bodyHeight)/2, 0);
+					all.add(body);
+					const door1Geom = new THREE.BoxGeometry(bodyWight-0.2,0.8,0.1);
+					const door1 = new THREE.Mesh(door1Geom,handleMat);
+					door1.position.set(0,0.6,bodyLen/2);
+					const door2Geom = new THREE.BoxGeometry(bodyWight-0.2,0.4,0.1);
+					const door2 = new THREE.Mesh(door2Geom,handleMat);
+					door2.position.set(0,1.35,bodyLen/2);
+					const door3Geom = new THREE.BoxGeometry(bodyWight,1,0.1);
+					const door3 = new THREE.Mesh(door3Geom,material);
+					door3.position.set(0,0.6,bodyLen/2+0.1);
+					const door4Geom = new THREE.BoxGeometry(bodyWight,0.55,0.1);
+					const door4 = new THREE.Mesh(door4Geom,material);
+					door4.position.set(0,1.40,bodyLen/2+0.1);
+					all.add(door1,door2,door3,door4);
+
+					all.position.set(posX,0,posZ);
+					all.rotation.y += rot;
+					Furniture.All.add(all);
+					Furniture.FloorCount++;	
+				}
+				static addWashMachine(posX,posZ,rot){
+					let all = new THREE.Group();
+					const baseHeight = 0.1, baseLen = 0.5;
+					const bodyHeight = 0.7 , bodyLen = 0.6 , bodyWight = 0.6;
+					const holeRad = 0.15;
+					const baseMat = new THREE.MeshPhongMaterial( {color: "black"});
+					const material = new THREE.MeshPhongMaterial( {color: 0xd6d5d4});
+					const baseGeom = new THREE.BoxGeometry(baseLen,baseHeight,baseLen);
+					const base = new THREE.Mesh(baseGeom,baseMat);
+					base.position.set(0,baseHeight/2,0);
+					all.add(base);
+					const bodyGeom = new THREE.BoxGeometry(bodyWight,bodyHeight,bodyLen);
+					const body = new THREE.Mesh(bodyGeom,material);
+					body.position.set(0,(baseHeight+bodyHeight)/2, 0);
+					//all.add(body);
+					const holeGeom = new THREE.CylinderGeometry(holeRad,holeRad,bodyLen/2,20);
+					const hole = new THREE.Mesh(holeGeom);
+					hole.rotation.x += Math.PI/2;
+					hole.position.set(0,(baseHeight+bodyHeight)/2, bodyLen/4);
+					var csg = new CSG();
+					csg.subtract( [body, hole] );
+					const result = csg.toMesh();
+					result.material = material;
+					all.add(result);
+					const torusG = new THREE.TorusGeometry( holeRad, holeRad-0.1,2, 16 );
+					const torus = new THREE.Mesh( torusG, baseMat );
+					torus.position.set(0,bodyHeight/2,bodyWight/2+0.01);
+					all.add(torus);
+					const torus2G = new THREE.TorusGeometry( holeRad-0.11,holeRad-0.11 ,2, 8 );
+					const glassMat = new THREE.MeshPhysicalMaterial( {color:"grey", transparent: true, opacity: 0.5} );
+					const torus2 = new THREE.Mesh( torus2G, glassMat);
+					torus2.position.set(0,bodyHeight/2,bodyWight/2);
+					all	.add(torus2);
+					const screenG = new THREE.BoxGeometry(baseLen,0.1,0.1);
+					const screen = new THREE.Mesh(screenG,baseMat);
+					screen.position.set(0,bodyHeight-0.05,0.3);
+					all.add(screen);
+
+
+					all.position.set(posX,0,posZ);
+					all.rotation.y += rot;
+					Furniture.All.add(all);
+					Furniture.FloorCount++;	
+				}
 				static generateAll(){
 					house.add(Furniture.All);
 					
@@ -1224,7 +1344,6 @@
 			}
 			
 			Wall.newZWall(6, 6.90 , 1);	
-			//Wall.wallsArr[Wall.wallCount-1].addWindow(4);	
 			Wall.newXWall(2.2, 5.9 ,3.9);
 			Wall.newZWall(4, 4.90 , 6);
 			Wall.newXWall(4, -1 ,7.9);
@@ -1235,7 +1354,6 @@
 			Wall.newXWall(4, -5 ,3.9);
 			Wall.wallsArr[Wall.wallCount-1].addWindow(2);
 			Wall.newZWall(6, -6.9 ,1);
-			//Wall.wallsArr[Wall.wallCount-1].addWindow(2);
 			Wall.newXWall(4, -5 ,-1.9);	
 			Wall.wallsArr[Wall.wallCount-1].addWindow(2);
 			Wall.newZWall(4.2, -2.9 ,-3.9);
@@ -1243,7 +1361,6 @@
 			Wall.wallsArr[Wall.wallCount-1].addWindow(3);
 			Wall.newZWall(4, 4.90 , -4);
 			Wall.newXWall(2.2, 5.9 ,-1.9);
-
 			Wall.newXWall(3.8, 2.9 ,-1.9);
 			Wall.newXWall(3.8, -0.9 ,-1.9);
 			Wall.wallsArr[Wall.wallCount-1].addDoor();
@@ -1260,8 +1377,7 @@
 			Wall.newXWall(2.5, 0.8 , 3.90);
 			//Wall.generateAllWalls();
 			Wall.generateAll();
-			
-			
+					
 			Floor.newFloor(-2.5,1,9,6,"brown");
 			Floor.newFloor(1,-4,8,4,"brown");
 			Floor.newFloor(4.5,0,5,4,"brown");
@@ -1269,14 +1385,11 @@
 			Floor.newFloor(-0.5,6,5,4,"brown");
 			Floor.newFloor(3.5,6,3,4,"grey");
 			Floor.newFloor(3.5,3,3,2,"grey");
-			Floor.generateAll();
-
+			//Floor.generateAll();
 			
 			Furniture.addTable(-0.5,1,"#663300");
 			Furniture.addAshtray(-0.5,0.82,0.8);
-			Furniture.addHammock(-7,10,Math.PI/5);
-			
-			Furniture.kitchenBase();
+			//Furniture.addHammock(-7,10,Math.PI/5);
 			Furniture.addKitchenSink(5.5,0.97,-1.52,"#663300");
 			Furniture.addBow(5.5,1,-1.5,"lightblue");
 			Furniture.addBow(5.13,1.2,-1.5,"white");
@@ -1287,7 +1400,7 @@
 			Furniture.addGlassCup(4.5,1.15,-1.5,"blue",3);
 			Furniture.addGlassCup(4.8,1.15,-1.4,"white",3);
 			Furniture.addGlassCup(4.85,1.15,-1.7,"white",3);
-			Furniture.addStatue(8,-8,-Math.PI/4);
+			//Furniture.addStatue(8,-8,-Math.PI/4);
 			Furniture.addBow(-0.3,0.82,0.4,"white");
 			Furniture.addBow(-0.3,0.82,1.5,"grey");
 			Furniture.addBow(-0.6,0.82,1.2,"white");	
@@ -1311,26 +1424,25 @@
 			Furniture.addBunkBed(3.75,-3.35,"#663300","lightgreen","lightblue",0);
 			Furniture.addBunkBed(3.75,-5.7,"#663300","pink","orange",0);
 			Furniture.addBunkBed(-2.7,-4.7,"#663300","lightyellow","purple",Math.PI/2);
-
 			Furniture.bathRoomSink(2.4,0.7,4.6,Math.PI/2);
-			
 			Furniture.addCouch(-3,0.3,"lightgreen",-Math.PI/2,3);
 			Furniture.addCouch(-4,-0.5,"lightgreen",-Math.PI/3,1);
 			Furniture.addCouch(-4,2.3,"lightgreen",(Math.PI/(0.9)) ,2);
-			
 			Furniture.addGlassTable(-4.3,0.7,"grey",Math.PI/2);
 			Furniture.addBotDrawer(-6.6,0.5,1.4,false,"#663300",Math.PI*2);
 			Furniture.addBotDrawer(-6.6,0.5,0.6,true,"#663300",Math.PI*2);
 			Furniture.addDrawer2(-6.6,0.5,-0.1,true,"#663300",Math.PI*2);
 			Furniture.addDrawer2(-6.6,0.5,2.1,false,"#663300",Math.PI*2);
 			Furniture.addTV(-6.5,1,1,0);
-			
 			Furniture.addBigDrawer(-6.45,3.1,"#663300",0);
 			Furniture.addBigDrawer(-6.45,-1.1,"#663300",0);
-		
-			
 			Furniture.addShoeDrawer(0.8,4.2,"#663300",0);
-
+			Furniture.addHangers(0,1.5,4,"#663300",0,6);
+			Furniture.addFridge(3.95,-1.45,0);
+			Furniture.addWashMachine(3.2,-1.45,0);
+			Furniture.kitchenBase();
+			
+			
 			Furniture.generateAll();
 
 			
