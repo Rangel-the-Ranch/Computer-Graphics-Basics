@@ -15,67 +15,62 @@
 			renderer.shadowMap.enabled = true;
 			renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 			var scene = new THREE.Scene();
-			scene.background = new THREE.Color( 'skyblue' );
+			scene.background = new THREE.Color( 'lightyellow' );
 			var aspect = window.innerWidth/window.innerHeight;
 			var camera = new THREE.PerspectiveCamera( 30, aspect );
 			camera.position.set( 0, 120, 200 );
 			camera.lookAt( new THREE.Vector3( 0, -10, 0 ) );
 
-			var ball = new THREE.Mesh(
-				new THREE.SphereGeometry( 2, 32, 32 ),
-				new THREE.MeshPhongMaterial( {color: 'white'} )
-			);
-			ball.castShadow = true;
-			scene.add( ball );
-
-			var ground = new THREE.Mesh(
-				new THREE.BoxGeometry( 160.2, 2.2, 100.2 ),
-				new THREE.MeshPhongMaterial( {color: 'green'} )
-			);
-			ground.position.y = -6;
-			ground.receiveShadow = true;
-			scene.add( ground );
-			var ground = new THREE.Mesh(
-				new THREE.BoxGeometry( 5, 2.2, 100.2 ),
-				new THREE.MeshPhongMaterial( {color: 'white'} )
-			);
-			ground.position.y = -5.9;
-			ground.position.x = -80;
-			ground.receiveShadow = true;
-			scene.add( ground );
-			var ground = new THREE.Mesh(
-				new THREE.BoxGeometry( 5, 2.2, 100.2 ),
-				new THREE.MeshPhongMaterial( {color: 'white'} )
-			);
-			ground.position.y = -5.9;
-			ground.position.x = +80;
-			ground.receiveShadow = true;
-			scene.add( ground );
-			var ground = new THREE.Mesh(
-				new THREE.BoxGeometry( 165, 2.2, 5 ),
-				new THREE.MeshPhongMaterial( {color: 'white'} )
-			);
-			ground.position.y = -5.9;
-			ground.position.z = 50;
-			ground.receiveShadow = true;
-			scene.add( ground );
-			var ground = new THREE.Mesh(
-				new THREE.BoxGeometry( 165, 2.2, 5 ),
-				new THREE.MeshPhongMaterial( {color: 'white'} )
-			);
-			ground.position.y = -5.9;
-			ground.position.z = -50;
-			ground.receiveShadow = true;
-			scene.add( ground );
-			var ground = new THREE.Mesh(
-				new THREE.BoxGeometry( 165, 2.2, 5 ),
-				new THREE.MeshPhongMaterial( {color: 'white'} )
-			);
-			ground.position.y = -5.9;
-			ground.position.z = 0;
-			ground.receiveShadow = true;
-			scene.add( ground );
 			
+
+	
+			function createGlassCup(glassBot,thicknes,glassHeight){
+				const glassCup = new THREE.Group();
+				const color = "grey";
+				const glassMaterial = new THREE.MeshPhysicalMaterial( {color:color, transparent: true, opacity: 0.5} );
+				const bottom = new THREE.Mesh(	new THREE.BoxGeometry(glassBot,thicknes,glassBot), glassMaterial);
+				const side1 = new THREE.Mesh(new THREE.BoxGeometry(glassBot+thicknes*2,glassHeight,thicknes) , glassMaterial);
+				const side2 = new THREE.Mesh(new THREE.BoxGeometry(glassBot+thicknes*2,glassHeight,thicknes) , glassMaterial);
+				const side3 = new THREE.Mesh(new THREE.BoxGeometry(glassBot,glassHeight,thicknes) , glassMaterial);
+				const side4 = new THREE.Mesh(new THREE.BoxGeometry(glassBot,glassHeight,thicknes) , glassMaterial);
+				side1.position.set(glassBot/2+thicknes/2,glassHeight/2,0);
+				side1.rotation.y += Math.PI/2;
+				side2.position.set(-glassBot/2-thicknes/2,glassHeight/2,0);
+				side2.rotation.y += Math.PI/2;
+				side3.position.set(0,glassHeight/2,glassBot/2+thicknes/2);
+				side4.position.set(0,glassHeight/2,-glassBot/2-thicknes/2);
+				glassCup.add(bottom,side1,side2,side3,side4);
+
+				const waterMaterial = new THREE.MeshPhysicalMaterial( {color:"#00FFFF", transparent: true, opacity: 0.4} );
+				const water = new THREE.Mesh(	new THREE.BoxGeometry(glassBot,glassHeight - 5,glassBot), waterMaterial);
+				water.position.set(0,(glassHeight-5)/2 + 1 ,0);
+				glassCup.add(water);
+
+				return glassCup;
+			}
+			function iceCube(size){
+				const color = "blue";
+				const iceMaterial = new THREE.MeshPhysicalMaterial( {color:color, transparent: true, opacity: 0.4} );
+				const ice = new THREE.Mesh(new THREE.BoxGeometry(size,size,size) , iceMaterial);
+				return ice;
+
+			}
+			const height = 20 , sizeX = 15 , thicknes = 2;
+			const startX = 40 
+			const cup1 = createGlassCup(sizeX,thicknes,height);
+			const cup2 = createGlassCup(sizeX,thicknes,height);
+			cup1.position.set(-startX,0,0);
+			cup2.position.set( startX,0,0);
+			scene.add(cup1,cup2);
+			const ice1 = iceCube(5);
+			const ice2 = iceCube(5);
+			ice1.position.set(-startX,height-5,0);
+			ice2.position.set( startX,height-5,0);
+			scene.add(ice1,ice2);
+
+			
+
+
 			var light = new THREE.PointLight();
 			light.position.set( 0, 100, 0 );
 			light.castShadow = false;
@@ -85,41 +80,43 @@
 			light.castShadow = false;
 			scene.add( light );
 
+			function updateCubeSpeed(curr){
+				let nSpeed = curr;
+				if( Math.abs(ice1.position.x - cup1.position.x ) > sizeX/2 - 2.5){
+					nSpeed = glassSpeed;
+				}
 
-			const palkeGeometry = new THREE.CylinderGeometry(10,10,1,32);
-			const palkaMat = new THREE.MeshPhongMaterial({color: "red"});
-			const palka1 = new THREE.Mesh(palkeGeometry,palkaMat);
-			palka1.rotation.z = Math.PI/2;
-			palka1.position.set(100,0,0);
-			scene.add(palka1);
+				return nSpeed;
+			}
 
-			
-			const palka2 = new THREE.Mesh(palkeGeometry,palkaMat);
-			palka2.rotation.z = Math.PI/2;
-			palka2.position.set(-100,0,0);
-			scene.add(palka2);
+			let glassSpeed = 0.8 , iceSpeed = 0;;
+			let coladed  = false;
 
-			ball.position.y = 20;
-			const maxX = 100,minY = -3;
-			let vectorX = 1;
-			let vectorY = -0.02;
-			let vectorZ = 0;
-			let upwardInertia = 0.002;
+
 			function drawFrame(){
-				ball.position.x += vectorX;
-				ball.position.y += vectorY;
-				ball.position.z += vectorZ;
-				vectorY = vectorY - 0.001;
-				if( Math.abs(ball.position.x) >= maxX){
-					vectorX *= -1;
+				if( coladed ){
+					glassSpeed /= 1.1;
+					iceSpeed /= 1.02;
+					if(Math.abs(ice1.position.x - cup1.position.x ) > sizeX/2 - 2.5 ){
+						iceSpeed *= -1;
+					}
+				}else if(cup1.position.x + sizeX/2 + 2 >=  0){
+					glassSpeed *= -1;
+					coladed = true;
+					
+					
+				}else{
+					iceSpeed = updateCubeSpeed(iceSpeed);
 				}
-				if(ball.position.y <= -3){
-					vectorY = 0.2;
-				}
-				palka1.position.y = ball.position.y;
-				palka2.position.y = ball.position.y;
-				renderer.render( scene, camera );
+				
+				cup1.position.x += glassSpeed;
+				cup2.position.x -= glassSpeed;
+				ice1.position.x += iceSpeed;
+				ice2.position.x -= iceSpeed;
+				
+				
 
+				renderer.render( scene, camera );
 				scene.rotation.y += 0.002;
 			}
 		</script>
