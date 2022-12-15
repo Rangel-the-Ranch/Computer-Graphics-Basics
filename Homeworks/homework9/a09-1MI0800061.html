@@ -1,0 +1,131 @@
+﻿<html>
+	<head>
+		<style>
+			body { margin: 0; }
+			canvas { width: 100%; height: 100% }
+		</style>
+	</head>
+	<body>
+		<script src="three.min.js"></script>
+		<script>
+			var renderer = new THREE.WebGLRenderer({antialias:true});
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			renderer.setAnimationLoop( drawFrame );
+			document.body.appendChild( renderer.domElement );
+			renderer.shadowMap.enabled = true;
+			renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+			var scene = new THREE.Scene();
+			scene.background = new THREE.Color( 'lightblue' );
+			var aspect = window.innerWidth/window.innerHeight;
+			var camera = new THREE.PerspectiveCamera( 30, aspect );
+			camera.position.set( 0, 500, 200 );
+			camera.lookAt( new THREE.Vector3( 0, 0, 0 ) );
+
+			const plane = new THREE.Mesh(  new THREE.PlaneGeometry( 1000, 1000 ), new THREE.MeshBasicMaterial( {color: "lightgreen", side: THREE.DoubleSide} ) );
+			plane.rotation.x += Math.PI/2;
+			scene.add(plane);
+
+			function createChurch(posX,posZ){
+				const church = new THREE.Group();
+				const churchMaterial = new THREE.MeshPhongMaterial( {color:"Blue"} );
+				const base = new THREE.Mesh(new THREE.BoxGeometry(10,5,10), churchMaterial);
+				church.add(base);
+				const base2 = new THREE.Mesh(new THREE.BoxGeometry(5,3,5), churchMaterial);
+				base2.position.set(0,5,0);
+				church.add(base2);
+				const base3 = new THREE.Mesh(new THREE.SphereGeometry(3,32,32,32), churchMaterial);
+				base3.position.set(0,8,0);
+				church.add(base3);
+				const tower = new THREE.Mesh(new THREE.CylinderGeometry(1,1,12,32), churchMaterial);
+				tower.position.set(3,6,3);
+				church.add(tower);
+
+				church.position.set(posX,0,posZ);
+				return church;
+				
+			}
+			function createJusticePalace(posX,posZ){
+				const justicePalace = new THREE.Group();
+				const material = new THREE.MeshPhongMaterial( {color:"Blue"} );
+				const base = new THREE.Mesh(new THREE.BoxGeometry(10,5,3.5), material);
+				base.position.set(0,2.5,0);
+				justicePalace.add(base);
+				const wing1 = new THREE.Mesh(new THREE.BoxGeometry(2,5,5), material);
+				wing1.position.set(-4,2.5,1);
+				justicePalace.add(wing1);
+				const wing2 = new THREE.Mesh(new THREE.BoxGeometry(2,5,5), material);
+				wing2.position.set(4,2.5,1);
+				justicePalace.add(wing2);
+				const wingC = new THREE.Mesh(new THREE.BoxGeometry(2.2,5,5), material);
+				wingC.position.set(0,2.5,1);
+				justicePalace.add(wingC);
+				const roofL = new THREE.Mesh(new THREE.CylinderGeometry(1,1,5,32), material);
+				roofL.position.set(4,5,1);
+				roofL.rotation.x += Math.PI/2;
+				justicePalace.add(roofL);
+				const roofR = new THREE.Mesh(new THREE.CylinderGeometry(1,1,5,32), material);
+				roofR.position.set(-4,5,1);
+				roofR.rotation.x += Math.PI/2;
+				justicePalace.add(roofR);
+				const roofC = new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,5,4), material);
+				roofC.position.set(0,5,1);
+				roofC.rotation.x += Math.PI/2;
+				justicePalace.add(roofC);
+
+				justicePalace.position.set(posX,0,posZ);
+				return justicePalace;
+			}
+			function createP(posX,posZ){
+				const P = new THREE.Group();
+				const material = new THREE.MeshPhongMaterial( {color:"grey"} );
+				const colum1 = new THREE.Mesh(new THREE.BoxGeometry(1.5,20,1.5), material);
+				colum1.position.set(-1,10,-1);
+				P.add(colum1);
+				const colum2 = new THREE.Mesh(new THREE.BoxGeometry(1.5,20,1.5), material);
+				colum2.position.set(1,10,-1);
+				P.add(colum2);
+				const colum3 = new THREE.Mesh(new THREE.BoxGeometry(1.5,20,1.5), material);
+				colum3.position.set(1,10,1);
+				P.add(colum3);
+				const colum4 = new THREE.Mesh(new THREE.BoxGeometry(1.5,20,1.5), material);
+				colum4.position.set(-1,10,1);
+				P.add(colum4);	
+				const floorG = new THREE.BoxGeometry(3,1,3);
+				for(var i=0; i<10;i++){
+					const floor1 = new THREE.Mesh(floorG,material);
+					floor1.position.set(0,i*2,0);
+					P.add(floor1)
+				}
+				const roof1 = new THREE.Mesh(new THREE.BoxGeometry(4,1,4),material);
+				roof1.position.set(0,20,0);
+				P.add(roof1)
+				const roof2 = new THREE.Mesh(new THREE.SphereGeometry(2,32,32),material);
+				roof2.position.set(0,21,0);
+				P.add(roof2)
+				P.position.set(posX,0,posZ);
+				return P;
+			}
+			
+			scene.add(createChurch(-150,50))
+			scene.add(createJusticePalace(30,-80));
+			scene.add(createP(100,-50));
+
+			var light = new THREE.PointLight();
+			light.position.set( 0, 100, 0 );
+			light.castShadow = false;
+			scene.add( light );
+			var light = new THREE.PointLight();
+			light.position.set( 0, 20, 0 );
+			light.castShadow = false;
+			scene.add( light );
+			camera.position.set( 0, 500, 200 );
+			//camera.position.set(100,200,50);
+			function drawFrame(){
+				renderer.render( scene, camera );
+				
+				//scene.rotation.y += 0.002;
+				//scene.rotation.x -= 0.005;
+			}
+		</script>
+	</body>
+</html>
