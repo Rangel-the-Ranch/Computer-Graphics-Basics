@@ -105,11 +105,6 @@
 				P.position.set(posX,0,posZ);
 				return P;
 			}
-			
-			scene.add(createChurch(-150,50))
-			scene.add(createJusticePalace(30,-80));
-			scene.add(createP(100,-50));
-
 			var light = new THREE.PointLight();
 			light.position.set( 0, 100, 0 );
 			light.castShadow = false;
@@ -118,10 +113,83 @@
 			light.position.set( 0, 20, 0 );
 			light.castShadow = false;
 			scene.add( light );
-			camera.position.set( 0, 500, 200 );
-			//camera.position.set(100,200,50);
+			
+			const ch = createChurch(-150,50);
+			const jT = createJusticePalace(30,-80);
+			const P = createP(100,-50);
+			scene.add(ch)
+			scene.add(jT);
+			scene.add(P);
+
+			
+			
+			const N=3;
+			var looks = [];
+			looks[0] = new THREE.Vector3( -150, 20, 50 ); //ch
+			looks[1] = new THREE.Vector3( 100, 20, -50 ); //p
+			looks[2] = new THREE.Vector3( 30, 20, -80 ); //jT
+
+			looks[3] = new THREE.Vector3( -150, 20, 50 );
+			
+			var pos = [];
+			pos[0] =new THREE.Vector3( -150, 50, 150 );
+			pos[1] =new THREE.Vector3(  100, 50, 100 );
+			pos[2] =new THREE.Vector3(  40, 50, 50 );
+			
+			pos[3] =new THREE.Vector3(  -150, 50, 150 );
+			
+
+			//var i=2
+			//camera.position.set(pos[i].x,pos[i].y,pos[i].z);
+			//camera.lookAt(looks[i]); 
+			var i = 0 , c=0.0;
+			const movement = 200;
+			const lMovement = 100;
+			var currPos;
+			var curLk = looks[0];
+			var rtCount = 0;
+
+			const test = 0;
+			//camera.position.set(pos[test].x,pos[test].y,pos[test].z);
+			camera.lookAt(looks[test]); 
 			function drawFrame(){
 				renderer.render( scene, camera );
+				
+				if(c>movement){
+					c=0;
+					i++;	
+				}else if(c == movement){
+					//c++;
+					console.log(curLk);
+					if(rtCount >= lMovement){
+						c++;
+						rtCount = 0;
+						curLk = looks[i+1];
+					}else{
+						curLk  = new THREE.Vector3(
+													(( (looks[i+1].x - looks[i].x) /lMovement)*rtCount+looks[i].x) , 
+													20,  
+													(( (looks[i+1].z - looks[i].z)  /lMovement)*rtCount+looks[i].z) 
+												)
+						rtCount++;
+					}
+					
+				}else{
+					currPos = new THREE.Vector3(
+													(( (pos[i+1].x - pos[i].x) /movement)*c+pos[i].x) , 
+													50,  
+													(( (pos[i+1].z - pos[i].z)  /movement)*c+pos[i].z) 
+												)
+					c++;
+				}
+				
+				camera.position.set(currPos.x,currPos.y,currPos.z);
+				camera.lookAt(curLk); 
+				//camera.lookAt(looks[i])
+				
+				if(i>= N){
+					i=0;
+				}
 				
 				//scene.rotation.y += 0.002;
 				//scene.rotation.x -= 0.005;
