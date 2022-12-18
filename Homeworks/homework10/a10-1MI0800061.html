@@ -25,22 +25,24 @@
 			plane.rotation.x += Math.PI/2;
 			scene.add(plane);
 
+			document.body.addEventListener( 'keydown', onKeyDown ); 
+			document.body.addEventListener( 'keyup', onKeyUp ); 
 			function createChurch(posX,posZ){
 				const church = new THREE.Group();
 				const churchMaterial = new THREE.MeshPhongMaterial( {color:"yellow"} );
 				const base = new THREE.Mesh(new THREE.BoxGeometry(10,5,10), churchMaterial);
 				church.add(base);
 				const base2 = new THREE.Mesh(new THREE.BoxGeometry(5,3,5), churchMaterial);
-				base2.position.set(0,5,0);
+				base2.position.set(0,4,0);
 				church.add(base2);
 				const base3 = new THREE.Mesh(new THREE.SphereGeometry(3,32,32,32), churchMaterial);
-				base3.position.set(0,8,0);
+				base3.position.set(0,7,0);
 				church.add(base3);
 				const tower = new THREE.Mesh(new THREE.CylinderGeometry(1,1,12,32), churchMaterial);
 				tower.position.set(3,6,3);
 				church.add(tower);
 
-				church.position.set(posX,0,posZ);
+				church.position.set(posX,-1.5,posZ);
 				return church;
 				
 			}
@@ -129,6 +131,8 @@
 			light.castShadow = false;
 			scene.add( light );
 			
+			
+			
 			const ch = createChurch(-150,50);
 			const jT = createJusticePalace(30,-80);
 			const Hos = createHouse(-50,100);
@@ -138,75 +142,73 @@
 			scene.add(Hos);
 			scene.add(P);
 
-			
-			
-			const N=4;
-			var looks = [];
-			looks[0] = new THREE.Vector3( -150, 20, 50 ); //ch
-			looks[1] = new THREE.Vector3( 100, 20, -50 ); //p
-			looks[2] = new THREE.Vector3( -50, 20, 100 ); //hos
-			looks[3] = new THREE.Vector3( 30, 20, -80 ); //jT
-
-			looks[4] = new THREE.Vector3( -150, 20, 50 );
-			
-			var pos = [];
-			pos[0] =new THREE.Vector3( -150, 50, 150 );
-			pos[1] =new THREE.Vector3(  100, 50, 50 );
-			pos[2] =new THREE.Vector3(  -50, 50, 200 );
-			pos[3] =new THREE.Vector3(  40, 50, 50 );
-			
-			pos[4] =new THREE.Vector3(  -150, 50, 150 );
-			
-
-			//var i=2
-			//camera.position.set(pos[i].x,pos[i].y,pos[i].z);
-			//camera.lookAt(looks[i]); 
-			var i = 0 , c=0.0;
-			const movement = 200;
-			const lMovement = 100;
-			var currPos;
-			var curLk = looks[0];
-			var rtCount = 0;
-
-			camera.lookAt(looks[test]); 
+			var turnLeft = false; 
+			var turnRight = false; 
+			var goForward = false; 
+			var goBack = false;
+			function onKeyDown( event ){
+				//console.log(event);
+				if( event.code=='ArrowLeft' || event.keyCode==37 ){
+					turnLeft = true;
+					turnRight = false;
+				}
+				if( event.code=='ArrowRight' || event.keyCode==39 ){
+					turnRight = true;
+					turnLeft = false;	
+				}
+				if( event.code=='ArrowUp' || event.keyCode==38 ){
+					goForward = true;
+					
+					goBack = false;
+				}
+				if( event.code=='ArrowDown' || event.keyCode==40 ){
+					goForward = false;
+					goBack = true;
+				}
+			}
+			function onKeyUp( event ){
+				if( event.code=='ArrowLeft' || event.keyCode==37 ){
+					turnLeft = false;
+				}
+				if( event.code=='ArrowRight' || event.keyCode==39 ){
+					turnRight = false;
+				}
+				if( event.code=='ArrowUp' || event.keyCode==38 ){
+					goForward = false;
+				}
+				if( event.code=='ArrowDown' || event.keyCode==40 ){
+					goBack = false;
+				}
+			}
+			var dir = 0;
+			var cos = Math.cos(dir);
+			var sin = Math.sin(dir);
+			camera.position.set( 0, 1, 0 );
+			//camera.lookAt(new THREE.Vector3(-150,10,50));
+			let x=-250,z=30;			
 			function drawFrame(){
 				renderer.render( scene, camera );
-				
-				if(c>movement){
-					c=0;
-					i++;	
-				}else if(c == movement){
-					//c++;
-					console.log(curLk);
-					if(rtCount >= lMovement){
-						c++;
-						rtCount = 0;
-						curLk = looks[i+1];
-					}else{
-						curLk  = new THREE.Vector3(
-													(( (looks[i+1].x - looks[i].x) /lMovement)*rtCount+looks[i].x) , 
-													20,  
-													(( (looks[i+1].z - looks[i].z)  /lMovement)*rtCount+looks[i].z) 
-												)
-						rtCount++;
-					}
-					
-				}else{
-					currPos = new THREE.Vector3(
-													(( (pos[i+1].x - pos[i].x) /movement)*c+pos[i].x) , 
-													50,  
-													(( (pos[i+1].z - pos[i].z)  /movement)*c+pos[i].z) 
-												)
-					c++;
+				if( turnLeft ) dir -= 0.008;
+				if( turnRight ) dir += 0.008;
+				cos = Math.cos( dir );
+				sin = Math.sin( dir );
+				if(goForward){
+					console.log(0);
+					x += cos/2;
+					z += sin/2;
+				}
+				if(goBack){
+					x -= cos/2;
+					z -= sin/2;
 				}
 				
-				camera.position.set(currPos.x,currPos.y,currPos.z);
-				camera.lookAt(curLk); 
-				//camera.lookAt(looks[i])
+				//camera.position.set(posX,5,posZ);
 				
-				if(i>= N){
-					i=0;
-				}
+				camera.position.set( x-0.01*cos, 1, z-0.01*sin );
+				camera.lookAt( new THREE.Vector3( x+10*cos, 1, z+10*sin ) );
+				
+				//console.log(dir);
+				
 			}
 		</script>
 	</body>
